@@ -1,0 +1,89 @@
+name: quran-daily-shorts
+
+on:
+  schedule:
+    - cron: '30 0 * * *'
+  workflow_dispatch:
+    inputs:
+      count:
+        description: 'Videos to produce (1/3/6)'
+        required: true
+        default: '6'
+        type: choice
+        options:
+          - '6'
+          - '3'
+          - '1'
+      now:
+        description: 'Publish immediately (skip scheduled publish slots)'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-upload:
+    runs-on: windows-latest
+    env:
+      QURAN_RECITER: aziz_alili_128kbps
+      QURAN_RECITER_NAME: Aziz Alili
+      PYTHONIOENCODING: utf-8
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Python deps
+        run: |
+          pip install --disable-pip-version-check -q requests numpy pillow google-api-python-client google-auth google-auth-httplib2 google-auth-oauthlib imageio-ffmpeg mutagen
+
+      - name: Install Node deps (remotion)
+        working-directory: remotion-video
+        run: npm ci
+
+      - name: Verify Chrome
+        run: |
+          if (Test-Path 'C:\Program Files\Google\Chrome\Application\chrome.exe') { Write-Host 'chrome ok' } else { Write-Host 'CHROME MISSING'; exit 1 }
+
+      - name: Restore OAuth token (secret)
+        run: |
+          [IO.File]::WriteAllBytes('trend-video-maker/token_aya.pickle', [Convert]::FromBase64String($env:TOKEN_AUTH_B64))
+
+      - name: Run daily pipeline
+        working-directory: remotion-video
+        run: |
+          $count = '${{ github.event.inputs.count }}'
+          if ($count -eq '') { $count = '6' }
+          $now = '${{ github.event.inputs.now }}'
+          if ($now -eq 'true') { $now = '--now' } else { $now = '' }
+          python -u daily_quran_fm.py --count $count $now
+
+      - name: Persist pipeline state
+        run: |
+          $files = @(
+            'remotion-video/work/quran_fm_state.json',
+            'trend-video-maker/content/quran_full/duration_cache_aziz_alili_128kbps.json'
+          )
+          $any = $false
+          foreach ($f in $files) {
+            if (Test-Path $f) { git add -f $f; $any = $true }
+          }
+          if ($any) {
+            git config user.name 'quran-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git commit -m 'chore: persist quran pipeline state [skip ci]'
+            git push
+          } else {
+            Write-Host 'nothing to persist'
+          }

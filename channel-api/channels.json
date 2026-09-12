@@ -1,0 +1,10 @@
+﻿{
+  "channels": {
+    "aya": {
+      "id": "UC7P9VOk6zxBLnG3Zd_wyJNw",
+      "name": "آیه آرامش",
+      "token": "trend-video-maker/token_aya.pickle",
+      "goal_hours": 4000
+    }
+  }
+}
