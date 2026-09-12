@@ -1,7 +1,7 @@
 {
   "short_cursor": 19,
-  "viral_cursor": 5,
-  "short_surah_cursor": 0,
+  "viral_cursor": 6,
+  "short_surah_cursor": 3,
   "done": [
     "055013",
     "036001",
@@ -116,7 +116,131 @@
     "093007",
     "093008",
     "093009",
-    "093010"
+    "093010",
+    "095001",
+    "095002",
+    "095003",
+    "095004",
+    "095005",
+    "095006",
+    "095007",
+    "095008",
+    "096001",
+    "096002"
   ],
-  "plans": {}
+  "plans": {
+    "2026-09-12": [
+      {
+        "slots": [
+          [
+            6098,
+            {
+              "code": "095001",
+              "surah": 95,
+              "surah_name": "التِّينِ",
+              "surah_en": "At-Tin",
+              "ayah_num": 1
+            }
+          ],
+          [
+            6099,
+            {
+              "code": "095002",
+              "surah": 95,
+              "surah_name": "التِّينِ",
+              "surah_en": "At-Tin",
+              "ayah_num": 2
+            }
+          ],
+          [
+            6100,
+            {
+              "code": "095003",
+              "surah": 95,
+              "surah_name": "التِّينِ",
+              "surah_en": "At-Tin",
+              "ayah_num": 3
+            }
+          ],
+          [
+            6101,
+            {
+              "code": "095004",
+              "surah": 95,
+              "surah_name": "التِّينِ",
+              "surah_en": "At-Tin",
+              "ayah_num": 4
+            }
+          ],
+          [
+            6102,
+            {
+              "code": "095005",
+              "surah": 95,
+              "surah_name": "التِّينِ",
+              "surah_en": "At-Tin",
+              "ayah_num": 5
+            }
+          ],
+          [
+            6103,
+            {
+              "code": "095006",
+              "surah": 95,
+              "surah_name": "التِّينِ",
+              "surah_en": "At-Tin",
+              "ayah_num": 6
+            }
+          ],
+          [
+            6104,
+            {
+              "code": "095007",
+              "surah": 95,
+              "surah_name": "التِّينِ",
+              "surah_en": "At-Tin",
+              "ayah_num": 7
+            }
+          ],
+          [
+            6105,
+            {
+              "code": "095008",
+              "surah": 95,
+              "surah_name": "التِّينِ",
+              "surah_en": "At-Tin",
+              "ayah_num": 8
+            }
+          ],
+          [
+            6106,
+            {
+              "code": "096001",
+              "surah": 96,
+              "surah_name": "العَلَقِ",
+              "surah_en": "Al-Alaq",
+              "ayah_num": 1
+            }
+          ],
+          [
+            6107,
+            {
+              "code": "096002",
+              "surah": 96,
+              "surah_name": "العَلَقِ",
+              "surah_en": "Al-Alaq",
+              "ayah_num": 2
+            }
+          ]
+        ],
+        "slot": [
+          2,
+          30
+        ],
+        "kind": "short",
+        "hook": "التِّينِ",
+        "total_sec": 44.828
+      }
+    ]
+  }
 }
