@@ -57,8 +57,12 @@ jobs:
           if (Test-Path 'C:\Program Files\Google\Chrome\Application\chrome.exe') { Write-Host 'chrome ok' } else { Write-Host 'CHROME MISSING'; exit 1 }
 
       - name: Restore OAuth token (secret)
+        env:
+          TOKEN_AUTH_B64: ${{ secrets.TOKEN_AUTH_B64 }}
         run: |
+          if (-not $env:TOKEN_AUTH_B64) { Write-Host 'TOKEN_AUTH_B64 secret is empty'; exit 1 }
           [IO.File]::WriteAllBytes('trend-video-maker/token_aya.pickle', [Convert]::FromBase64String($env:TOKEN_AUTH_B64))
+          python -c "import pickle;c=pickle.load(open('trend-video-maker/token_aya.pickle','rb'));print('token ok:',bool(getattr(c,'refresh_token',None)))"
 
       - name: Run daily pipeline
         working-directory: remotion-video
