@@ -876,6 +876,105 @@ def upload_video(yt, video: Path, thumb: Path, title: str, desc: str, tags: list
     return None
 
 # ── main ───────────────────────────────────────────────────────────────────────
+def make_custom_bg_video(bg_image: str, yt=None, publish_day: str | None = None):
+    """Render + upload ONE pending block from the daily plan using a custom
+    public/ background image (Ken Burns animated). Returns video id or None.
+    Safe to call next to main(): reuses the same OUT markers + state['done']."""
+    today = publish_day or date.today().isoformat()
+    state = load_state()
+    plan = state.get("plans", {}).get(today)
+    if plan is None:
+        plan = build_plan(state, today, VIDEOS_PER_DAY)
+        if plan:
+            state.setdefault("plans", {})[today] = plan
+            save_state(state)
+            _push_pipeline_state()
+    done_uploaded = set(state.get("done", []))
+    pending = None
+    for p in plan or []:
+        codes = [s[1]["code"] for s in p["slots"]]
+        vname = "qfm_" + codes[0] + "_" + codes[-1]
+        if (OUT / f"{vname}.uploaded").exists():
+            continue
+        if all(c in done_uploaded for c in codes):
+            continue
+        pending = p
+        break
+    if pending is None:
+        print("[custom-bg] no pending block available", flush=True)
+        return None
+
+    pairs = list(pending["slots"])
+    items = [make_item(e) for _, e in pairs]
+    durations = [DUR_CACHE.get(e["code"], 5.0) for _, e in pairs]
+    while durations and (98 + sum(max(10, round(d * 30)) for d in durations)) / 30 >= 50:
+        durations.pop(); items.pop(); pairs.pop()
+    codes = [e["code"] for _, e in pairs]
+
+    # ensure tilawat audio + durations
+    for code in codes:
+        dst = TILAWAT_DIR / f"seg_{code}.mp3"
+        if not (dst.exists() and dst.stat().st_size > 1000):
+            src = AUDIO_DIR / f"{code}.mp3"
+            if src.exists() and src.stat().st_size > 1000:
+                dst.write_bytes(src.read_bytes())
+            else:
+                ensure_ayah_audio(code, dst)
+    refresh_dur_cache()
+    for code in codes:
+        if code not in DUR_CACHE or DUR_CACHE[code] <= 0.1:
+            dst = TILAWAT_DIR / f"seg_{code}.mp3"
+            if dst.exists() and dst.stat().st_size > 1000:
+                d = probe_duration(dst)
+                if d > 0:
+                    DUR_CACHE[code] = d
+    save_dur_cache()
+
+    first, last = items[0], items[-1]
+    video_name = f"qfm_{pairs[0][1]['code']}_{pairs[-1][1]['code']}"
+    ref = f"{first['surahEn']} {first['ayahNum']}-{last['ayahNum']} ({len(items)} ayahs)"
+    video, thumb = OUT / f"{video_name}.mp4", OUT / f"{video_name}.jpg"
+    marker = OUT / f"{video_name}.uploaded"
+    if marker.exists():
+        print(f"[custom-bg] already uploaded {video_name}", flush=True)
+        return None
+    lang = pending.get("lang", "en")
+    surah_msg = SURAH_MESSAGES.get(pairs[0][1]["code"][:3], "")
+    props = {"items": items, "durations": durations, "hook": pending.get("hook", ""),
+             "surahMsg": surah_msg, "lang": lang, "bg": "image", "bgImage": bg_image}
+    print(f"[custom-bg] rendering {ref}  bg={bg_image}", flush=True)
+    ok_v = render_video(video_name, "NatureDaily", props, video)
+    ok_t = render_thumb(video_name, "TrendThumbnail", props, thumb) if ok_v else False
+    if not ok_v or not ok_t:
+        print("[custom-bg] render failed", flush=True)
+        return None
+
+    title, desc, tags = seo_block(items, today, lang=lang)
+    if yt is None:
+        sys.path.insert(0, PY_MAKER)
+        from upload_yt import auth as yt_auth
+        yt = yt_auth(TOKEN)
+    print(f"[custom-bg] uploading {title}", flush=True)
+    vid = upload_video(yt, video, thumb, title, desc, tags, None)
+    if vid:
+        marker.write_text("ok", encoding="utf-8")
+        for _, e in pairs:
+            if e["code"] not in state.setdefault("done", []):
+                state["done"].append(e["code"])
+        save_state(state)
+        _push_pipeline_state()
+        for f in (video, thumb):
+            try:
+                if f.exists():
+                    f.unlink()
+            except Exception:
+                pass
+        print(f"[custom-bg] DONE https://youtu.be/{vid}", flush=True)
+        return vid
+    print("[custom-bg] upload failed", flush=True)
+    return None
+
+
 def main():
     dry   = "--dry-run" in sys.argv
     now   = "--now" in sys.argv

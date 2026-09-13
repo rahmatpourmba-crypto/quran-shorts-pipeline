@@ -3,6 +3,7 @@ import {
   AbsoluteFill,
   Audio,
   Easing,
+  Img,
   interpolate,
   OffthreadVideo,
   Sequence,
@@ -158,7 +159,7 @@ const VerseSegment: React.FC<{item: Item; dur: number}> = ({item, dur}) => {
   );
 };
 
-export const NatureDaily: React.FC<{items: Item[]; durations: number[]; hook?: string; bg?: 'video' | 'procedural'}> = ({items, durations, hook, bg = 'procedural'}) => {
+export const NatureDaily: React.FC<{items: Item[]; durations: number[]; hook?: string; bg?: 'video' | 'image' | 'procedural'; bgImage?: string}> = ({items, durations, hook, bg = 'procedural', bgImage = ''}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
 
@@ -178,6 +179,11 @@ export const NatureDaily: React.FC<{items: Item[]; durations: number[]; hook?: s
           <AbsoluteFill>
             {bg === 'procedural' ? (
               <ProceduralBackground index={i + (it.code.charCodeAt(0) || 0)} />
+            ) : bg === 'image' ? (
+              <Img
+                src={staticFile(bgImage)}
+                style={{position: 'absolute', left: '-30%', width: '260%', height: '100%', objectFit: 'cover', filter: 'saturate(1.45) brightness(1.25) contrast(1.12)', transform: kitburns(i === 0 ? frame : Math.max(frame - starts[i], 0), ds[i])}}
+              />
             ) : (
               <OffthreadVideo
                 src={staticFile(`/backgrounds/${BGS[(i + (it.code.charCodeAt(0) || 0)) % BGS.length]}`)}
