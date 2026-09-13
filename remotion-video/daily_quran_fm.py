@@ -547,15 +547,34 @@ def build_plan(state: dict, today: str, count: int) -> list:
     return plan
 
 # ── SEO ────────────────────────────────────────────────────────────────────────
-# Emotional rotating Persian/Roman hooks + Arabic hashtags that worked on the
-# winning shorts (5.9K views) targeting the huge Arabic-speaking audience.
-HOOK_POOL = [
-    "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ 💛",
-    "این آیه آرامش قلبت را برمیگرداند 🕊",
+# Emotional rotating hooks per language + Arabic hashtags that worked on the
+# winning shorts (1.2K views) targeting the huge Arabic-speaking audience.
+# Proven title formula:  <emotional hook + emoji> | <surah range>
+HOOK_POOL_FA = [
+    "این آیه آرامش قلبت را برمی‌گرداند 🕊",
     "بگذار این آیه قلب و ذهنت را پاک کند 🌿",
     "یک لحظه آرامش با تلاوت دلنشین ✨",
     "آیه‌ای که استرس‌ات را می‌گیرد 🍃",
     "آرامش به قلب خسته 🌙",
+    "صلحی برای قلب تشنه ☁️",
+]
+
+HOOK_POOL_AR = [
+    "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ 💛",
+    "آيةٌ تُسكِنُ القُلوبَ 🌙",
+    "سَكينةٌ لِأرواحِكم 🕊",
+    "فَاذْكُرُونِي أَذْكُرْكُمْ 💛",
+    "راحةٌ من همِّ الدنيا ✨",
+    "داوُوا قُلوبَكُم بهذه الآية 🌿",
+]
+
+HOOK_POOL_EN = [
+    "Hear what calms your heart 💛",
+    "The verse that resets your mind 🕊",
+    "Let these words heal your soul 🌿",
+    "One minute of true peace ✨",
+    "The verse that melts stress 🍃",
+    "Peace for a tired heart 🌙",
 ]
 
 AR_TAGS = "#القرآن_الكريم #quran #اكسبلور #الرحمن #القران #تلاوة #وَقَالَ_رَبُّكُم #quranrecitation #اللهم_صل_وسلم_على_نبينا_محمد #عبدالرحمن_عبدالصمد"
@@ -564,24 +583,23 @@ EN_TAGS = "#quran #quranrecitation #sleep #islam #calm #dua #quranforsleep #musl
 KU_TAGS = "#قورئان #quran #ئارامی #خۆ" "ڕاستكان #dua #islam #کوردی"
 KURDISH_SUFFIX = " · کوردی"
 
-def _lang_hook(lang: str, first: dict, fallback_hook: str) -> str:
+def _pick_hook(lang: str, code: str) -> str:
+    idx = sum(ord(c) for c in code) % 6
     if lang == "en":
-        return first["en"].split('"')[0].strip()[:60]
+        return HOOK_POOL_EN[idx]
     if lang == "ar":
-        return fallback_hook
-    if lang == "ku":
-        return fallback_hook
-    return fallback_hook
+        return HOOK_POOL_AR[idx]
+    return HOOK_POOL_FA[idx]
 
 def _lang_title(lang: str, hook: str, ayah_range: str, code: str) -> str:
     """Localise the first part of the title for the thumbnail's language."""
     if lang == "en":
-        return f"Peaceful Quran Recitation · {hook} | {code} - {ayah_range} "
+        return f"{hook} | {ayah_range} "
     if lang == "ar":
-        return f"تلاوة هادئة · {hook} | {code} - {ayah_range} "
+        return f"{hook} | {ayah_range} "
     if lang == "ku":
-        return f"خوێندنی قورئان · ئارامی {hook} | {code} - {ayah_range} {KURDISH_SUFFIX}"
-    return f"تلاوت آرامش‌بخش · {hook} | {code} - {ayah_range} "
+        return f"{hook} · کوردی | {ayah_range} "
+    return f"{hook} | {ayah_range} "
 
 def _lang_desc(lang: str, ref: str, ayah_ar: str, ayah_en: str) -> list:
     if lang == "en":
@@ -640,8 +658,7 @@ def _lang_desc(lang: str, ref: str, ayah_ar: str, ayah_en: str) -> list:
 
 def seo_block(items: list, today: str, lang: str = "en") -> tuple:
     first, last = items[0], items[-1]
-    hook = HOOK_POOL[sum(ord(c) for c in items[0]["code"]) % len(HOOK_POOL)]
-    hook = _lang_hook(lang, first, hook)
+    hook = _pick_hook(lang, items[0]["code"])
     surah_ar = first["surahName"]
     if first["surahEn"] != last["surahEn"]:
         ayah_range = f"{first['code'][:3]} {first['ayahNum']}–{last['code'][:3]} {last['ayahNum']}"
