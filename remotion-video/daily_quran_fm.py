@@ -48,9 +48,9 @@ RECITER_NAME = _os.environ.get("QURAN_RECITER_NAME", "Yasser Al-Dosari")
 #   • 3 international (EN) + 3 Arabic (AR) + 3 Persian (FA) every day
 #   • every language publishes at ITS region primetime (SLOT_LANG below)
 VIDEOS_PER_DAY = 9
-TARGET_BLOCK_SEC = 43          # aim for ~43s of tilaawah per video
-BLOCK_MAX_SEC   = 48           # hard-ish cap per block
-MAX_AYAH_PER_VIDEO = 14         # many short ayahs may be needed to hit ~43s
+TARGET_BLOCK_SEC = 38          # aim for ~38s of tilaawah per video
+BLOCK_MAX_SEC   = 42           # hard-ish cap per block (total lands < 50s)
+MAX_AYAH_PER_VIDEO = 14         # many short ayahs may be needed to hit ~38s
 
 # Language → primetime slots (UTC). 9 slots, each tied to the audience region:
 #   EN → EU/global midday + US early/evening
@@ -1007,6 +1007,11 @@ def main():
         # every video is a block of consecutive ayahs
         items = [make_item(e) for _, e in pairs]
         durations = [DUR_CACHE.get(e["code"], 5.0) for _, e in pairs]
+        # hard cap: never exceed 50s total (NatureDaily overhead ≈ 3.3s + 0.4s/ayah)
+        while durations and (98 + sum(max(10, round(d * 30)) for d in durations)) / 30 >= 50:
+            durations.pop()
+            items.pop()
+            pairs.pop()
         first, last = items[0], items[-1]
         video_name = f"qfm_{pairs[0][1]['code']}_{pairs[-1][1]['code']}"
         ref = f"{first['surahEn']} {first['ayahNum']}-{last['ayahNum']} ({len(items)} ayahs)"

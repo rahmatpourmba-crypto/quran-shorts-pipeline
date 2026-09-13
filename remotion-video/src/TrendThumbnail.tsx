@@ -105,13 +105,13 @@ const accentLight = isGold ? GOLD_LIGHT : '#DFF6E8';
 // bold web-safe sans for English readability (Amiri/Vazirmatn render too thin)
 const EN_FONT = '"Segoe UI", "Arial Black", system-ui, sans-serif';
 // strong English headline colors (trend trick: bold cold/red text on warm bg)
-const EN_COLOR = '#C9E6FF';          // ice blue-white
-const EN_GLOW = 'rgba(120,190,255,0.9)';
-const GLOW_COLOR = lang === 'en' ? EN_GLOW : `${accent}99`;
+const EN_COLOR = '#FFFFFF';     // true white — max contrast, never washed out
+const EN_GLOW = 'rgba(140,205,255,0.95)';
+const GLOW_COLOR = lang === 'en' ? EN_GLOW : `${accent}cc`;
   const bgIndex = isGold ? 0 : 1; // golden night vs emerald deep
   const overlayDark = isDeep
-    ? 'linear-gradient(180deg, rgba(5,7,12,0.02) 0%, rgba(5,7,12,0.42) 55%, rgba(5,7,12,0.85) 100%)'
-    : 'linear-gradient(180deg, rgba(5,7,12,0.02) 0%, rgba(5,7,12,0.24) 50%, rgba(5,7,12,0.55) 100%)';
+    ? 'linear-gradient(180deg, rgba(5,7,12,0.22) 0%, rgba(5,7,12,0.62) 52%, rgba(5,7,12,0.94) 100%)'
+    : 'linear-gradient(180deg, rgba(5,7,12,0.18) 0%, rgba(5,7,12,0.48) 48%, rgba(5,7,12,0.86) 100%)';
   const dir = lang === 'en' || lang === 'ku' ? 'ltr' : 'rtl';
 
   return (
@@ -140,6 +140,12 @@ const GLOW_COLOR = lang === 'en' ? EN_GLOW : `${accent}99`;
       {/* single focal point: the hook */}
       <AbsoluteFill style={{justifyContent: 'center', alignItems: 'center', flexDirection: 'column', transform: `scale(${pop})`, opacity: fade, padding: '0 4%'}}>
         <div style={{
+          display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%',
+          padding: '3.2% 5%',
+          background: 'radial-gradient(ellipse at 50% 40%, rgba(5,7,12,0.78) 0%, rgba(5,7,12,0.55) 55%, rgba(5,7,12,0.30) 100%)',
+          borderRadius: 26, border: `1px solid ${accentLight}22`,
+        }}>
+        <div style={{
           fontFamily: lang === 'en' ? EN_FONT : Fonts.quran,
           fontWeight: lang === 'en' ? 900 : 700,
           fontSize: hookSize,
@@ -149,10 +155,13 @@ const GLOW_COLOR = lang === 'en' ? EN_GLOW : `${accent}99`;
           lineHeight: 1.2,
           letterSpacing: lang === 'en' ? 1 : 0,
           textTransform: lang === 'en' ? 'uppercase' : 'none',
-          filter: strongGlow ? `drop-shadow(0 0 22px ${GLOW_COLOR})` : `drop-shadow(0 0 10px ${GLOW_COLOR})`,
-          textShadow: '0 2px 0 rgba(5,7,12,1), 0 4px 0 rgba(5,7,12,0.95), 0 10px 24px rgba(0,0,0,0.9)',
+          filter: strongGlow ? `drop-shadow(0 0 26px ${GLOW_COLOR})` : `drop-shadow(0 0 12px ${GLOW_COLOR})`,
+          textShadow: strongGlow
+            ? '0 1px 0 #05070c, 0 2px 0 rgba(5,7,12,0.98), 0 4px 6px rgba(0,0,0,0.95), 0 8px 22px rgba(0,0,0,0.9)'
+            : '0 1px 0 #05070c, 0 3px 5px rgba(0,0,0,0.9), 0 8px 18px rgba(0,0,0,0.85)',
         }}>
           {hookText}
+        </div>
         </div>
 
         {/* slim accent divider with pulse */}
