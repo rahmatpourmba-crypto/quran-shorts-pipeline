@@ -31,8 +31,8 @@ jobs:
   build-and-upload:
     runs-on: windows-latest
     env:
-      QURAN_RECITER: aziz_alili_128kbps
-      QURAN_RECITER_NAME: Aziz Alili
+      QURAN_RECITER: Yasser_Ad-Dussary_128kbps
+      QURAN_RECITER_NAME: Yasser Al-Dosari
       PYTHONIOENCODING: utf-8
     steps:
       - name: Checkout

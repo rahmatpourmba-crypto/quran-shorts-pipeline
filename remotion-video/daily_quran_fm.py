@@ -41,7 +41,7 @@ FPS = 30
 # SEO/descriptions can name the actual voice).
 import os as _os
 RECITER = _os.environ.get("QURAN_RECITER", "Yasser_Ad-Dussary_128kbps")
-RECITER_NAME = _os.environ.get("QURAN_RECITER_NAME", "Sheikh Yasser Al-Dosari")
+RECITER_NAME = _os.environ.get("QURAN_RECITER_NAME", "Yasser Al-Dosari")
 
 # Quick-config for the trilingual 45-day push (9 Shorts/day in 3+3+3):
 #   • each video targets ~42–45s of tilaawah → lands well under the 60s cap
