@@ -43,22 +43,30 @@ import os as _os
 RECITER = _os.environ.get("QURAN_RECITER", "Yasser_Ad-Dussary_128kbps")
 RECITER_NAME = _os.environ.get("QURAN_RECITER_NAME", "Sheikh Yasser Al-Dosari")
 
-# Quick-config for the new strategy (high-quality 45s Shorts, 6 per day):
+# Quick-config for the aggressive 45-day push (high-quality ~45s Shorts, 12/day):
 #   • each video targets ~42–45s of tilaawah → lands well under the 60s cap
-#   • VIDEOS_PER_DAY bumped to 6, slots spread across EU/US/IRST primes
-VIDEOS_PER_DAY = 6
+#   • VIDEOS_PER_DAY = 12 for max reach; slots every ~2h cover EU/US/IRST primes
+VIDEOS_PER_DAY = 12
 TARGET_BLOCK_SEC = 43          # aim for ~43s of tilaawah per video
 BLOCK_MAX_SEC   = 48           # hard-ish cap per block
 MAX_AYAH_PER_VIDEO = 14         # many short ayahs may be needed to hit ~43s
 
-# Best international publish windows (UTC) — spread to cover EU + US prime:
-#   02:30Z = 06:00 IRST (early; US west night / world morning)
-#   06:00Z = 09:30 IRST (US west evening / EU midday)
-#   10:30Z = 14:00 IRST (US east morning / EU afternoon)
-#   15:00Z = 18:30 IRST (EU evening / US east midday)
-#   19:30Z = 23:00 IRST (EU night / US east evening)
-#   23:00Z = 02:30 IRST (US west evening prime)
-PUBLISH_SLOTS = [(2, 30), (6, 0), (10, 30), (15, 0), (19, 30), (23, 0)]
+# Best international publish windows (UTC) — 12 spread slots, ~2h apart, so a
+# Short lands in as many timezone buckets as possible on the 45-day push:
+#   02:30Z = 06:00 IRST (early; world morning start)
+#   04:30Z = 08:00 IRST (EU morning / US west night)
+#   06:30Z = 10:00 IRST (EU midday / US west morning)
+#   08:30Z = 12:00 IRST (EU afternoon / US east morning)
+#   10:30Z = 14:00 IRST (US east late morning / EU afternoon)
+#   12:30Z = 16:00 IRST (EU evening / US east midday)
+#   14:30Z = 18:00 IRST (EU evening / US east early afternoon)
+#   16:30Z = 20:00 IRST (EU night / US east afternoon)
+#   18:30Z = 22:00 IRST (US east late afternoon / EU night)
+#   20:30Z = 00:00 IRST (US east evening prime)
+#   22:30Z = 02:00 IRST (US east late / US west evening)
+#   23:45Z = 03:15 IRST (US west evening prime)
+PUBLISH_SLOTS = [(2, 30), (4, 30), (6, 30), (8, 30), (10, 30), (12, 30),
+                 (14, 30), (16, 30), (18, 30), (20, 30), (22, 30), (23, 45)]
 
 # ── surah message → English thumbnail hook ────────────────────────────────────
 # One trending-style English message per surah (the "پیام سوره"). Shown as the
