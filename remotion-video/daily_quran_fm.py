@@ -296,6 +296,39 @@ def load_state():
 def save_state(state: dict):
     STATE.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
 
+
+# ── crash-safe repo persistence ─────────────────────────────────────────────────
+# GitHub kills jobs at the 6h wall; the terminal "Persist state" step then never
+# runs and progress is lost. Instead we best-effort `git push` the state file
+# (and duration cache) right after each save, using the runner's GITHUB_TOKEN.
+def _push_pipeline_state():
+    repo = ROOT.parent                    # repo root (remotion-video is a subdir)
+    if not (repo / ".git").exists():
+        return False
+    env = dict(os.environ)
+    files = [
+        "remotion-video/work/quran_fm_state.json",
+        "trend-video-maker/content/quran_full/duration_cache_aziz_alili_128kbps.json",
+    ]
+    for attempt in range(2):
+        try:
+            subprocess.run(["git", "-C", str(repo), "add", "-f"] + files,
+                           env=env, capture_output=True)
+            subprocess.run(
+                ["git", "-C", str(repo),
+                 "-c", "user.name=quran-actions[bot]",
+                 "-c", "user.email=41898282+github-actions[bot]@users.noreply.github.com",
+                 "commit", "-m", "chore: persist quran pipeline state [skip ci]"],
+                env=env, capture_output=True)
+            push = subprocess.run(["git", "-C", str(repo), "push"], env=env,
+                                  capture_output=True)
+            if push.returncode == 0:
+                return True
+        except Exception:
+            pass
+        time.sleep(15)
+    return False
+
 def ayah_dur_estimate(code: str) -> float:
     """Real duration if cached, else estimate from Arabic text length (~7.5 chars/sec for Dossary)."""
     if code in DUR_CACHE and DUR_CACHE[code] > 0.1:
@@ -854,6 +887,7 @@ def main():
         if not dry:
             state.setdefault("plans", {})[plan_key] = plan
             save_state(state)
+            _push_pipeline_state()
         print(f"plan for {plan_key}: {len(plan)} items", flush=True)
         for p in plan:
             refs = [s[1]["code"] for s in p["slots"]]
@@ -876,6 +910,7 @@ def main():
         if not dry:
             state.setdefault("plans", {})[plan_key] = plan
             save_state(state)
+            _push_pipeline_state()
         print(f"fresh plan for {plan_key}: {len(plan)} items", flush=True)
         for p in plan:
             refs = [s[1]["code"] for s in p["slots"]]
@@ -928,6 +963,7 @@ def main():
                     if d > 0:
                         DUR_CACHE[code] = d
         save_dur_cache()
+        _push_pipeline_state()
 
     # ── upload auth ────────────────────────────────────────────────────────────
     sys.path.insert(0, PY_MAKER)
@@ -1027,6 +1063,7 @@ def main():
                 if e["code"] not in state["done"]:
                     state["done"].append(e["code"])
             save_state(state)
+            _push_pipeline_state()
             # user rule: delete any local video after successful upload
             for f in (video, thumb):
                 try:

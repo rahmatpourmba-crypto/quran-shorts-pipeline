@@ -3,6 +3,9 @@ name: quran-daily-shorts
 on:
   schedule:
     - cron: '30 0 * * *'
+    - cron: '30 6 * * *'
+    - cron: '30 12 * * *'
+    - cron: '30 18 * * *'
   workflow_dispatch:
     inputs:
       count:
@@ -73,22 +76,3 @@ jobs:
           $now = '${{ github.event.inputs.now }}'
           if ($now -eq 'true') { $now = '--now' } else { $now = '' }
           python -u daily_quran_fm.py --count $count $now
-
-      - name: Persist pipeline state
-        run: |
-          $files = @(
-            'remotion-video/work/quran_fm_state.json',
-            'trend-video-maker/content/quran_full/duration_cache_aziz_alili_128kbps.json'
-          )
-          $any = $false
-          foreach ($f in $files) {
-            if (Test-Path $f) { git add -f $f; $any = $true }
-          }
-          if ($any) {
-            git config user.name 'quran-actions[bot]'
-            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git commit -m 'chore: persist quran pipeline state [skip ci]'
-            git push
-          } else {
-            Write-Host 'nothing to persist'
-          }
