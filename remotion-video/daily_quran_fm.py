@@ -839,7 +839,7 @@ def render_thumb(name: str, comp: str, props: dict, out_file: Path) -> bool:
     props_file = _write_props_file(props, name)
     target = str(INDEX_TS) if not _ensure_bundle() else str(BUNDLE_DIR)
     cmd = _remotion_cmd() + ["still", target, comp, str(out_file),
-                             "--frame", "1", "--scale=2", f"--props={props_file}",
+                             "--frame", "20", "--scale=2", f"--props={props_file}",
                              "--browser-executable", CHROME]
     for attempt in range(3):
         log = WORK / f"thumb_{name}_{attempt}.log"
