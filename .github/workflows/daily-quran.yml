@@ -6,12 +6,12 @@ on:
   workflow_dispatch:
     inputs:
       count:
-        description: 'Videos to produce (12/6/3/1)'
+        description: 'Videos to produce (9 = 3+3+3 trilingual)'
         required: true
-        default: '12'
+        default: '9'
         type: choice
         options:
-          - '12'
+          - '9'
           - '6'
           - '3'
           - '1'
@@ -69,7 +69,7 @@ jobs:
         working-directory: remotion-video
         run: |
           $count = '${{ github.event.inputs.count }}'
-          if ($count -eq '') { $count = '12' }
+          if ($count -eq '') { $count = '9' }
           $now = '${{ github.event.inputs.now }}'
           if ($now -eq 'true') { $now = '--now' } else { $now = '' }
           python -u daily_quran_fm.py --count $count $now

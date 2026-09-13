@@ -61,28 +61,41 @@ export const TrendThumbnail: React.FC<{items: Item[]; hook?: string; surahMsg?: 
   const f = items[0];
   const last = items[items.length - 1];
   const aria = (f?.arabic || '…').split('\n')[0];
-  const maxWords = style?.max_words && style.max_words > 1 ? style.max_words : 3;
-  // language-aware hook: en -> preferred surah message (global trend hook) or
-  // strong english phrase; ar -> arabic text; fa -> provided hook (persian);
-  // ku -> english fallback with kurdish hint
+  // per-language headline, kept meaningful (never chopped mid-sentence):
+  //   en -> curated english surah message (or en ayah)  ar -> arabic hook
+  //   fa -> persian translation of the ayah             ku -> hook/fa fallback
+  const stripBasmala = (s: string) => {
+    const parts = s.trim().split(' ');
+    return parts[0] && parts[0].includes('بِسْمِ') ? parts.slice(4).join(' ') : s;
+  };
   const hookSource =
     lang === 'en' ? (surahMsg || f?.en || hook || aria) :
-    lang === 'ar' ? (aria || hook) :
-    lang === 'ku' ? (hook || f?.en || aria) :
-    (hook || aria);
+    lang === 'ar' ? (hook || stripBasmala(aria)) :
+    lang === 'ku' ? (hook || f?.fa || aria) :
+    (f?.fa || hook || aria);
+  const baseMax = style?.max_words && style.max_words > 1 ? style.max_words : 3;
+  const maxWords = lang === 'en' ? Math.max(baseMax, 4) : (lang === 'ar' ? 10 : 8);
   const hookText = hookSource.split(' ').slice(0, maxWords).join(' ');
-  const faShort = (f?.fa || 'تلاوت قرآن').split(' ').slice(0, 4).join(' ');
+  const faShort = (f?.fa || 'تلاوت قرآن').split(' ').slice(0, 5).join(' ');
   const subLine =
-    lang === 'en' ? (f?.en || faShort) :
-    lang === 'ar' ? (f?.arabic || faShort) :
-    lang === 'ku' ? (faShort) :
-    faShort;
+    lang === 'en'
+      ? `${f?.surahEn ?? ''} ${f?.ayahNum ?? ''} · The Quran, every day`
+      : lang === 'ar'
+      ? `${f?.surahName ?? ''} ${f?.ayahNum ?? ''} · تلاوة هادئة`
+      : lang === 'ku'
+      ? (f?.fa ? faShort : 'تلاوت قرآن')
+      : `${f?.surahEn ?? ''} ${f?.ayahNum ?? ''} · هر روز یک آیه`;
   const hlen = hookText.length;
   const textScale = style?.text_scale ?? 1.0;
-  const hookSize = (hlen <= 6 ? height * 0.3 : hlen <= 10 ? height * 0.225 : height * 0.16) * textScale;
+  const hookSize = (hlen <= 6 ? height * 0.3 : hlen <= 10 ? height * 0.225 : hlen <= 18 ? height * 0.16 : height * 0.13) * textScale;
   const pop = interpolate(frame, [0, 18], [0.92, 1], {easing: undefined, extrapolateRight: 'clamp'});
   const fade = interpolate(frame, [0, 14], [0, 1], {extrapolateRight: 'clamp'});
-  const lil = f ? `${f.surahEn}${last?.ayahNum && last.ayahNum !== f.ayahNum ? `-${last.ayahNum}` : ` ${f.ayahNum}`}` : '';
+  const lil =
+    lang === 'en'
+      ? (f ? `${f.surahEn}${last?.ayahNum && last.ayahNum !== f.ayahNum ? ` ${f.ayahNum}-${last.ayahNum}` : ` ${f.ayahNum}`}` : '')
+      : lang === 'ar'
+      ? (f ? `${f.surahName}  ${f.ayahNum}` : '')
+      : `${f?.surahEn ?? ''} ${f?.ayahNum ?? ''}`;
   const sub = (hlen <= 6 ? height * 0.048 : height * 0.04) * textScale;
 const isGold = (style?.palette ?? 'gold') === 'gold';
 const isDeep = (style?.contrast ?? 'deep') === 'deep';
@@ -94,6 +107,7 @@ const EN_FONT = '"Segoe UI", "Arial Black", system-ui, sans-serif';
 // strong English headline colors (trend trick: bold cold/red text on warm bg)
 const EN_COLOR = '#C9E6FF';          // ice blue-white
 const EN_GLOW = 'rgba(120,190,255,0.9)';
+const GLOW_COLOR = lang === 'en' ? EN_GLOW : `${accent}99`;
   const bgIndex = isGold ? 0 : 1; // golden night vs emerald deep
   const overlayDark = isDeep
     ? 'linear-gradient(180deg, rgba(5,7,12,0.02) 0%, rgba(5,7,12,0.42) 55%, rgba(5,7,12,0.85) 100%)'
@@ -107,6 +121,11 @@ const EN_GLOW = 'rgba(120,190,255,0.9)';
       {/* dark anchor for text contrast */}
       <AbsoluteFill style={{background: overlayDark}} />
       <AbsoluteFill style={{background: `radial-gradient(ellipse at 50% 46%, rgba(0,0,0,0) 40%, rgba(5,7,12,0.${isDeep ? 55 : 38}) 100%)`}} />
+
+      {/* premium inner frame + top light beam */}
+      <AbsoluteFill style={{pointerEvents: 'none', border: `1.5px solid ${accent}66`, margin: '2.2%', borderRadius: 18}} />
+      <AbsoluteFill style={{pointerEvents: 'none', border: `1px solid ${accentLight}40`, margin: '3.5%', borderRadius: 12}} />
+      <AbsoluteFill style={{background: `radial-gradient(120% 70% at 50% -8%, ${accent}2e 0%, rgba(0,0,0,0) 55%)`}} />
 
       {/* consistent brand strip — top */}
       <AbsoluteFill style={{justifyContent: 'flex-start', alignItems: 'center', paddingTop: height * 0.045}}>
@@ -130,7 +149,7 @@ const EN_GLOW = 'rgba(120,190,255,0.9)';
           lineHeight: 1.2,
           letterSpacing: lang === 'en' ? 1 : 0,
           textTransform: lang === 'en' ? 'uppercase' : 'none',
-          filter: strongGlow ? `drop-shadow(0 0 22px ${EN_GLOW})` : `drop-shadow(0 0 10px ${EN_GLOW})`,
+          filter: strongGlow ? `drop-shadow(0 0 22px ${GLOW_COLOR})` : `drop-shadow(0 0 10px ${GLOW_COLOR})`,
           textShadow: '0 2px 0 rgba(5,7,12,1), 0 4px 0 rgba(5,7,12,0.95), 0 10px 24px rgba(0,0,0,0.9)',
         }}>
           {hookText}

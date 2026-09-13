@@ -43,30 +43,32 @@ import os as _os
 RECITER = _os.environ.get("QURAN_RECITER", "Yasser_Ad-Dussary_128kbps")
 RECITER_NAME = _os.environ.get("QURAN_RECITER_NAME", "Sheikh Yasser Al-Dosari")
 
-# Quick-config for the aggressive 45-day push (high-quality ~45s Shorts, 12/day):
+# Quick-config for the trilingual 45-day push (9 Shorts/day in 3+3+3):
 #   • each video targets ~42–45s of tilaawah → lands well under the 60s cap
-#   • VIDEOS_PER_DAY = 12 for max reach; slots every ~2h cover EU/US/IRST primes
-VIDEOS_PER_DAY = 12
+#   • 3 international (EN) + 3 Arabic (AR) + 3 Persian (FA) every day
+#   • every language publishes at ITS region primetime (SLOT_LANG below)
+VIDEOS_PER_DAY = 9
 TARGET_BLOCK_SEC = 43          # aim for ~43s of tilaawah per video
 BLOCK_MAX_SEC   = 48           # hard-ish cap per block
 MAX_AYAH_PER_VIDEO = 14         # many short ayahs may be needed to hit ~43s
 
-# Best international publish windows (UTC) — 12 spread slots, ~2h apart, so a
-# Short lands in as many timezone buckets as possible on the 45-day push:
-#   02:30Z = 06:00 IRST (early; world morning start)
-#   04:30Z = 08:00 IRST (EU morning / US west night)
-#   06:30Z = 10:00 IRST (EU midday / US west morning)
-#   08:30Z = 12:00 IRST (EU afternoon / US east morning)
-#   10:30Z = 14:00 IRST (US east late morning / EU afternoon)
-#   12:30Z = 16:00 IRST (EU evening / US east midday)
-#   14:30Z = 18:00 IRST (EU evening / US east early afternoon)
-#   16:30Z = 20:00 IRST (EU night / US east afternoon)
-#   18:30Z = 22:00 IRST (US east late afternoon / EU night)
-#   20:30Z = 00:00 IRST (US east evening prime)
-#   22:30Z = 02:00 IRST (US east late / US west evening)
-#   23:45Z = 03:15 IRST (US west evening prime)
-PUBLISH_SLOTS = [(2, 30), (4, 30), (6, 30), (8, 30), (10, 30), (12, 30),
-                 (14, 30), (16, 30), (18, 30), (20, 30), (22, 30), (23, 45)]
+# Language → primetime slots (UTC). 9 slots, each tied to the audience region:
+#   EN → EU/global midday + US early/evening
+#   AR → Arabia/Egypt/Maghreb evening window
+#   FA → Iran evening prime (IRST+3:30)
+LANG_SLOTS = [
+    ((10, 30), "en"),  # 06:30 EDT · EU afternoons / global morning  — international
+    ((15,  0), "ar"),  # KSA 18:00 · Egypt 17:00                    — Arabia early eve
+    ((16,  0), "fa"),  # IRST 19:30                                 — Iran evening start
+    ((16, 30), "en"),  # EU 18:30 · US east 12:30                   — international
+    ((18,  0), "fa"),  # IRST 21:30                                 — Iran prime
+    ((18, 30), "ar"),  # KSA 21:30 · Egypt 20:30 · UAE 22:30        — Arabia prime
+    ((20, 30), "fa"),  # IRST 00:00 (late) / Persian diaspora US    — Iran late
+    ((21,  0), "ar"),  # Egypt 23:00 · Maghreb 22:00                — Arabia late
+    ((21, 30), "en"),  # US east 17:30 · US west 14:30              — international
+]
+PUBLISH_SLOTS = [s for s, _ in LANG_SLOTS]
+SLOT_LANG = {s: lang for s, lang in LANG_SLOTS}
 
 # ── surah message → English thumbnail hook ────────────────────────────────────
 # One trending-style English message per surah (the "پیام سوره"). Shown as the
@@ -502,9 +504,10 @@ def build_plan(state: dict, today: str, count: int) -> list:
         plan2 = [p for p in plan2 if not any(f["code"] in taken for _, f in p["slots"])]
         plan.extend(plan2)
 
-    # assign timestamps
+    # assign timestamps + per-language audience
     for p, it in zip(plan, PUBLISH_SLOTS[:len(plan)]):
         p["slot"] = it
+        p["lang"] = SLOT_LANG.get(it, "en")
     plan = plan[:count]
 
     state["viral_cursor"] = (cursor + count) % len(POPULAR_AYAHS)
@@ -624,6 +627,8 @@ def seo_block(items: list, today: str, lang: str = "en") -> tuple:
         tags = ["quran", "quran recitation", "sleep", "peace", "Quran for sleep", "Al-Dosari", "calm", "relaxation", "islamic video"]
     elif lang == "ar":
         tags = [t.replace("#", "") for t in AR_TAGS.split(" #") if t] + ["قرآن", "تلاوة"]
+    elif lang == "fa":
+        tags = [t.replace("#", "") for t in FA_TAGS.split(" #") if t] + ["قرآن", "تلاوت قرآن"]
     elif lang == "ku":
         tags = ["قورئان", "خوێندنی قورئان", "ئارامی", "quran", "kurdish quran", "دوعا", "ئایین"]
     return title, "\n".join(desc_lines), tags
@@ -958,7 +963,8 @@ def main():
         marker = OUT / f"{video_name}.uploaded"
 
         stamps = slot_str(slot)
-        print(f"[{today}] slot {slot_pos+1}/{len(remaining)}  ref={ref}  publish {stamps}", flush=True)
+        lang = p.get("lang", "en")
+        print(f"[{today}] slot {slot_pos+1}/{len(remaining)}  lang={lang}  ref={ref}  publish {stamps}", flush=True)
 
         if marker.exists():
             print(f"  already uploaded {marker.name}; skipping", flush=True)
@@ -980,7 +986,6 @@ def main():
             ok_v, ok_t = True, True
         else:
             print(f"  rendering block ({len(items)} ayahs, {sum(durations):.0f}s)...", flush=True)
-            lang = next_lang_cycle()
             surah_msg = SURAH_MESSAGES.get(pairs[0][1]["code"][:3], "")
             props = {"items": items, "durations": durations, "hook": p.get("hook", ""), "surahMsg": surah_msg, "lang": lang}
             ok_v = render_video(video_name, "NatureDaily", props, video)
@@ -996,7 +1001,7 @@ def main():
             continue
 
         # SEO
-        title, desc, tags = seo_block(items, publish_day, lang="en")
+        title, desc, tags = seo_block(items, publish_day, lang=p.get("lang", "en"))
 
         if dry:
             print(f"  [dry-run] {title}", flush=True)
