@@ -147,7 +147,7 @@ const GLOW_COLOR = lang === 'en' ? EN_GLOW : `${accent}cc`;
         }}>
         <div style={{
           fontFamily: lang === 'en' ? EN_FONT : Fonts.quran,
-          fontWeight: lang === 'en' ? 900 : 700,
+          fontWeight: lang === 'en' ? 900 : 900,
           fontSize: hookSize,
           color: lang === 'en' ? EN_COLOR : WHITE,
           textAlign: 'center',
@@ -155,10 +155,11 @@ const GLOW_COLOR = lang === 'en' ? EN_GLOW : `${accent}cc`;
           lineHeight: 1.2,
           letterSpacing: lang === 'en' ? 1 : 0,
           textTransform: lang === 'en' ? 'uppercase' : 'none',
-          filter: strongGlow ? `drop-shadow(0 0 26px ${GLOW_COLOR})` : `drop-shadow(0 0 12px ${GLOW_COLOR})`,
+          filter: strongGlow ? `drop-shadow(0 0 14px ${GLOW_COLOR})` : `drop-shadow(0 0 8px ${GLOW_COLOR})`,
+          WebkitTextStroke: lang === 'en' ? `${Math.max(3, height * 0.011)}px rgba(5,7,12,0.92)` : `${Math.max(3, height * 0.011)}px rgba(5,7,12,0.78)`,
           textShadow: strongGlow
-            ? '0 1px 0 #05070c, 0 2px 0 rgba(5,7,12,0.98), 0 4px 6px rgba(0,0,0,0.95), 0 8px 22px rgba(0,0,0,0.9)'
-            : '0 1px 0 #05070c, 0 3px 5px rgba(0,0,0,0.9), 0 8px 18px rgba(0,0,0,0.85)',
+            ? '0 2px 0 #05070c, 0 4px 8px rgba(0,0,0,0.9), 0 10px 26px rgba(0,0,0,0.75)'
+            : '0 2px 0 #05070c, 0 4px 8px rgba(0,0,0,0.85), 0 10px 22px rgba(0,0,0,0.7)',
         }}>
           {hookText}
         </div>
