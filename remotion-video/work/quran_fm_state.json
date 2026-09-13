@@ -1,6 +1,6 @@
 {
-  "short_cursor": 19,
-  "viral_cursor": 6,
+  "short_cursor": 28,
+  "viral_cursor": 15,
   "short_surah_cursor": 3,
   "done": [
     "002001",
@@ -273,6 +273,386 @@
         "kind": "short",
         "hook": "التِّينِ",
         "total_sec": 44.828
+      }
+    ],
+    "2026-09-13": [
+      {
+        "slots": [
+          [
+            77,
+            {
+              "code": "002071",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 71
+            }
+          ],
+          [
+            78,
+            {
+              "code": "002072",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 72
+            }
+          ],
+          [
+            79,
+            {
+              "code": "002073",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 73
+            }
+          ]
+        ],
+        "slot": [
+          10,
+          30
+        ],
+        "kind": "short",
+        "hook": "البَقَرَةِ",
+        "total_sec": 44.0925625,
+        "lang": "en"
+      },
+      {
+        "slots": [
+          [
+            135,
+            {
+              "code": "002129",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 129
+            }
+          ],
+          [
+            136,
+            {
+              "code": "002130",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 130
+            }
+          ],
+          [
+            137,
+            {
+              "code": "002131",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 131
+            }
+          ]
+        ],
+        "slot": [
+          15,
+          0
+        ],
+        "kind": "short",
+        "hook": "البَقَرَةِ",
+        "total_sec": 46.6525625,
+        "lang": "ar"
+      },
+      {
+        "slots": [
+          [
+            143,
+            {
+              "code": "002137",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 137
+            }
+          ],
+          [
+            144,
+            {
+              "code": "002138",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 138
+            }
+          ],
+          [
+            145,
+            {
+              "code": "002139",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 139
+            }
+          ]
+        ],
+        "slot": [
+          16,
+          0
+        ],
+        "kind": "short",
+        "hook": "البَقَرَةِ",
+        "total_sec": 47.33175,
+        "lang": "fa"
+      },
+      {
+        "slots": [
+          [
+            152,
+            {
+              "code": "002146",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 146
+            }
+          ],
+          [
+            153,
+            {
+              "code": "002147",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 147
+            }
+          ],
+          [
+            154,
+            {
+              "code": "002148",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 148
+            }
+          ]
+        ],
+        "slot": [
+          16,
+          30
+        ],
+        "kind": "short",
+        "hook": "البَقَرَةِ",
+        "total_sec": 40.895875000000004,
+        "lang": "en"
+      },
+      {
+        "slots": [
+          [
+            185,
+            {
+              "code": "002179",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 179
+            }
+          ],
+          [
+            186,
+            {
+              "code": "002180",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 180
+            }
+          ],
+          [
+            187,
+            {
+              "code": "002181",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 181
+            }
+          ]
+        ],
+        "slot": [
+          18,
+          0
+        ],
+        "kind": "short",
+        "hook": "البَقَرَةِ",
+        "total_sec": 38.606812500000004,
+        "lang": "fa"
+      },
+      {
+        "slots": [
+          [
+            211,
+            {
+              "code": "002205",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 205
+            }
+          ],
+          [
+            212,
+            {
+              "code": "002206",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 206
+            }
+          ],
+          [
+            213,
+            {
+              "code": "002207",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 207
+            }
+          ]
+        ],
+        "slot": [
+          18,
+          30
+        ],
+        "kind": "short",
+        "hook": "البَقَرَةِ",
+        "total_sec": 37.065625,
+        "lang": "ar"
+      },
+      {
+        "slots": [
+          [
+            231,
+            {
+              "code": "002225",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 225
+            }
+          ],
+          [
+            232,
+            {
+              "code": "002226",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 226
+            }
+          ],
+          [
+            233,
+            {
+              "code": "002227",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 227
+            }
+          ]
+        ],
+        "slot": [
+          20,
+          30
+        ],
+        "kind": "short",
+        "hook": "البَقَرَةِ",
+        "total_sec": 35.70725,
+        "lang": "fa"
+      },
+      {
+        "slots": [
+          [
+            246,
+            {
+              "code": "002240",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 240
+            }
+          ],
+          [
+            247,
+            {
+              "code": "002241",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 241
+            }
+          ],
+          [
+            248,
+            {
+              "code": "002242",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 242
+            }
+          ]
+        ],
+        "slot": [
+          21,
+          0
+        ],
+        "kind": "short",
+        "hook": "البَقَرَةِ",
+        "total_sec": 42.028875,
+        "lang": "ar"
+      },
+      {
+        "slots": [
+          [
+            323,
+            {
+              "code": "003031",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 31
+            }
+          ],
+          [
+            324,
+            {
+              "code": "003032",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 32
+            }
+          ],
+          [
+            325,
+            {
+              "code": "003033",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 33
+            }
+          ]
+        ],
+        "slot": [
+          21,
+          30
+        ],
+        "kind": "short",
+        "hook": "آلِ عِمۡرَانَ",
+        "total_sec": 47.5406875,
+        "lang": "en"
       }
     ]
   }
