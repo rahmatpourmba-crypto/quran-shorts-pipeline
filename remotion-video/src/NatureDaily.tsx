@@ -40,10 +40,21 @@ export function natureTotalFrames(durations: number[], fps: number): number {
   return total + END_FRAMES - BACKEND_FRAMES;
 }
 
-const kitburns = (frame: number, dur: number) => {
+const kitburns = (frame: number, dur: number, variant: number) => {
   const p = frame / Math.max(dur - 1, 1);
-  const scale = 1 + 0.1 * p;
-  return `scale(${scale}) translateY(${(1 - scale) * 50}%)`;
+  if (variant % 3 === 0) {
+    // slow cinematic zoom-in with slight rightward drift
+    const s = 1.06 + 0.20 * p;
+    return `scale(${s}) translate3d(${-2 * p}%, ${(1 - s) * 45}%, 0) rotate(${0.4 * p}deg)`;
+  }
+  if (variant % 3 === 1) {
+    // lateral pan (left→right) with gentle rise
+    const s = 1.16;
+    return `scale(${s}) translate3d(${-3 + 6 * p}%, ${-1.2 + 1.4 * p}%, 0) rotate(${0.5 - 0.5 * p}deg)`;
+  }
+  // upward pan with slow zoom
+  const s = 1.12 + 0.10 * p;
+  return `scale(${s}) translate3d(${1.5 * p}%, ${3 - 4 * p}%, 0) rotate(${-0.3 * p}deg)`;
 };
 
 const splitEn = (en: string): string[] => {
@@ -182,17 +193,23 @@ export const NatureDaily: React.FC<{items: Item[]; durations: number[]; hook?: s
             ) : bg === 'image' ? (
               <Img
                 src={staticFile(bgImage)}
-                style={{position: 'absolute', left: '-30%', width: '260%', height: '100%', objectFit: 'cover', filter: 'saturate(1.45) brightness(1.25) contrast(1.12)', transform: kitburns(i === 0 ? frame : Math.max(frame - starts[i], 0), ds[i])}}
+                style={{position: 'absolute', left: '-30%', width: '260%', height: '100%', objectFit: 'cover', filter: 'saturate(1.5) brightness(1.22) contrast(1.15)', transform: kitburns(i === 0 ? frame : Math.max(frame - starts[i], 0), ds[i], i)}}
               />
             ) : (
               <OffthreadVideo
                 src={staticFile(`/backgrounds/${BGS[(i + (it.code.charCodeAt(0) || 0)) % BGS.length]}`)}
                 muted
-                style={{position: 'absolute', left: '-60%', width: '420%', height: '100%', objectFit: 'cover', filter: 'saturate(1.35) brightness(1.3) contrast(1.08)', transform: kitburns(i === 0 ? frame : Math.max(frame - starts[i], 0), ds[i])}}
+                style={{position: 'absolute', left: '-60%', width: '420%', height: '100%', objectFit: 'cover', filter: 'saturate(1.35) brightness(1.3) contrast(1.08)', transform: kitburns(i === 0 ? frame : Math.max(frame - starts[i], 0), ds[i], i)}}
               />
             )}
             <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(5,7,12,0.12), rgba(5,7,12,0.38))'}} />
             <AbsoluteFill style={{background: 'radial-gradient(circle at 50% 42%, rgba(232,179,96,0.16) 0%, rgba(232,179,96,0) 58%)'}} />
+            {bg === 'image' && (
+              <>
+                <AbsoluteFill style={{background: `radial-gradient(120% 70% at 50% -10%, rgba(232,179,96,${0.16 + 0.05 * Math.sin(frame / 28)}) 0%, rgba(0,0,0,0) 55%)`}} />
+                <AbsoluteFill style={{background: `radial-gradient(ellipse at 50% 40%, rgba(0,0,0,0) 42%, rgba(5,7,12,${0.30 + 0.06 * Math.sin(frame / 34)}) 100%)`}} />
+              </>
+            )}
           </AbsoluteFill>
         </Sequence>
       ))}
