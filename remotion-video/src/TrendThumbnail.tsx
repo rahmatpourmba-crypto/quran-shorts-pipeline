@@ -110,22 +110,22 @@ const EN_GLOW = 'rgba(140,205,255,0.95)';
 const GLOW_COLOR = lang === 'en' ? EN_GLOW : `${accent}cc`;
   const bgIndex = isGold ? 0 : 1; // golden night vs emerald deep
   const overlayDark = isDeep
-    ? 'linear-gradient(180deg, rgba(5,7,12,0.22) 0%, rgba(5,7,12,0.62) 52%, rgba(5,7,12,0.94) 100%)'
-    : 'linear-gradient(180deg, rgba(5,7,12,0.18) 0%, rgba(5,7,12,0.48) 48%, rgba(5,7,12,0.86) 100%)';
+    ? 'linear-gradient(180deg, rgba(5,7,12,0.04) 0%, rgba(5,7,12,0.22) 48%, rgba(5,7,12,0.60) 100%)'
+    : 'linear-gradient(180deg, rgba(5,7,12,0.02) 0%, rgba(5,7,12,0.16) 44%, rgba(5,7,12,0.52) 100%)';
   const dir = lang === 'en' || lang === 'ku' ? 'ltr' : 'rtl';
 
   return (
     <AbsoluteFill style={{backgroundColor: '#05070c'}}>
       <ProceduralBackground index={isGold ? 0 : 1} />
 
-      {/* dark anchor for text contrast */}
+      {/* light vignette — lets vibrant bg show through */}
       <AbsoluteFill style={{background: overlayDark}} />
-      <AbsoluteFill style={{background: `radial-gradient(ellipse at 50% 46%, rgba(0,0,0,0) 40%, rgba(5,7,12,0.${isDeep ? 55 : 38}) 100%)`}} />
+      <AbsoluteFill style={{background: `radial-gradient(ellipse at 50% 46%, rgba(0,0,0,0) 35%, rgba(5,7,12,0.${isDeep ? 32 : 22}) 100%)`}} />
 
       {/* premium inner frame + top light beam */}
-      <AbsoluteFill style={{pointerEvents: 'none', border: `1.5px solid ${accent}66`, margin: '2.2%', borderRadius: 18}} />
-      <AbsoluteFill style={{pointerEvents: 'none', border: `1px solid ${accentLight}40`, margin: '3.5%', borderRadius: 12}} />
-      <AbsoluteFill style={{background: `radial-gradient(120% 70% at 50% -8%, ${accent}2e 0%, rgba(0,0,0,0) 55%)`}} />
+      <AbsoluteFill style={{pointerEvents: 'none', border: `2px solid ${accent}aa`, margin: '2.2%', borderRadius: 18}} />
+      <AbsoluteFill style={{pointerEvents: 'none', border: `1px solid ${accentLight}66`, margin: '3.5%', borderRadius: 12}} />
+      <AbsoluteFill style={{background: `radial-gradient(120% 70% at 50% -8%, ${accent}4e 0%, rgba(0,0,0,0) 55%)`}} />
 
       {/* consistent brand strip — top */}
       <AbsoluteFill style={{justifyContent: 'flex-start', alignItems: 'center', paddingTop: height * 0.045}}>
@@ -142,8 +142,8 @@ const GLOW_COLOR = lang === 'en' ? EN_GLOW : `${accent}cc`;
         <div style={{
           display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%',
           padding: '3.2% 5%',
-          background: 'radial-gradient(ellipse at 50% 40%, rgba(5,7,12,0.78) 0%, rgba(5,7,12,0.55) 55%, rgba(5,7,12,0.30) 100%)',
-          borderRadius: 26, border: `1px solid ${accentLight}22`,
+          background: `radial-gradient(ellipse at 50% 40%, ${accent}3d 0%, rgba(5,7,12,0.22) 58%, rgba(5,7,12,0) 100%)`,
+          borderRadius: 26, border: `1px solid ${accentLight}44`,
         }}>
         <div style={{
           fontFamily: lang === 'en' ? EN_FONT : Fonts.quran,
