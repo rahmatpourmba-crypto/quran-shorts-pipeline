@@ -1,6 +1,6 @@
 {
-  "short_cursor": 28,
-  "viral_cursor": 15,
+  "short_cursor": 37,
+  "viral_cursor": 24,
   "short_surah_cursor": 3,
   "done": [
     "002001",
@@ -673,6 +673,386 @@
         "kind": "short",
         "hook": "╪º┘ô┘ä┘É ╪╣┘É┘à█í╪▒┘Ä╪º┘å┘Ä",
         "total_sec": 47.5406875,
+        "lang": "en"
+      }
+    ],
+    "2026-09-14": [
+      {
+        "slots": [
+          [
+            248,
+            {
+              "code": "002242",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 242
+            }
+          ],
+          [
+            249,
+            {
+              "code": "002243",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 243
+            }
+          ],
+          [
+            250,
+            {
+              "code": "002244",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 244
+            }
+          ]
+        ],
+        "slot": [
+          10,
+          30
+        ],
+        "kind": "short",
+        "hook": "البَقَرَةِ",
+        "total_sec": 39.9651875,
+        "lang": "en"
+      },
+      {
+        "slots": [
+          [
+            325,
+            {
+              "code": "003033",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 33
+            }
+          ],
+          [
+            326,
+            {
+              "code": "003034",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 34
+            }
+          ],
+          [
+            327,
+            {
+              "code": "003035",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 35
+            }
+          ]
+        ],
+        "slot": [
+          15,
+          0
+        ],
+        "kind": "short",
+        "hook": "آلِ عِمۡرَانَ",
+        "total_sec": 40.148062499999995,
+        "lang": "ar"
+      },
+      {
+        "slots": [
+          [
+            348,
+            {
+              "code": "003056",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 56
+            }
+          ],
+          [
+            349,
+            {
+              "code": "003057",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 57
+            }
+          ],
+          [
+            350,
+            {
+              "code": "003058",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 58
+            }
+          ]
+        ],
+        "slot": [
+          16,
+          0
+        ],
+        "kind": "short",
+        "hook": "آلِ عِمۡرَانَ",
+        "total_sec": 33.1734375,
+        "lang": "fa"
+      },
+      {
+        "slots": [
+          [
+            361,
+            {
+              "code": "003069",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 69
+            }
+          ],
+          [
+            362,
+            {
+              "code": "003070",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 70
+            }
+          ],
+          [
+            363,
+            {
+              "code": "003071",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 71
+            }
+          ]
+        ],
+        "slot": [
+          16,
+          30
+        ],
+        "kind": "short",
+        "hook": "آلِ عِمۡرَانَ",
+        "total_sec": 41.219125,
+        "lang": "en"
+      },
+      {
+        "slots": [
+          [
+            379,
+            {
+              "code": "003087",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 87
+            }
+          ],
+          [
+            380,
+            {
+              "code": "003088",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 88
+            }
+          ],
+          [
+            381,
+            {
+              "code": "003089",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 89
+            }
+          ]
+        ],
+        "slot": [
+          18,
+          0
+        ],
+        "kind": "short",
+        "hook": "آلِ عِمۡرَانَ",
+        "total_sec": 33.6175,
+        "lang": "fa"
+      },
+      {
+        "slots": [
+          [
+            386,
+            {
+              "code": "003094",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 94
+            }
+          ],
+          [
+            387,
+            {
+              "code": "003095",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 95
+            }
+          ],
+          [
+            388,
+            {
+              "code": "003096",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 96
+            }
+          ]
+        ],
+        "slot": [
+          18,
+          30
+        ],
+        "kind": "short",
+        "hook": "آلِ عِمۡرَانَ",
+        "total_sec": 38.632999999999996,
+        "lang": "ar"
+      },
+      {
+        "slots": [
+          [
+            399,
+            {
+              "code": "003107",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 107
+            }
+          ],
+          [
+            400,
+            {
+              "code": "003108",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 108
+            }
+          ],
+          [
+            401,
+            {
+              "code": "003109",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 109
+            }
+          ]
+        ],
+        "slot": [
+          20,
+          30
+        ],
+        "kind": "short",
+        "hook": "آلِ عِمۡرَانَ",
+        "total_sec": 41.428125,
+        "lang": "fa"
+      },
+      {
+        "slots": [
+          [
+            418,
+            {
+              "code": "003126",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 126
+            }
+          ],
+          [
+            419,
+            {
+              "code": "003127",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 127
+            }
+          ],
+          [
+            420,
+            {
+              "code": "003128",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 128
+            }
+          ]
+        ],
+        "slot": [
+          21,
+          0
+        ],
+        "kind": "short",
+        "hook": "آلِ عِمۡرَانَ",
+        "total_sec": 39.468875,
+        "lang": "ar"
+      },
+      {
+        "slots": [
+          [
+            423,
+            {
+              "code": "003131",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 131
+            }
+          ],
+          [
+            424,
+            {
+              "code": "003132",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 132
+            }
+          ],
+          [
+            425,
+            {
+              "code": "003133",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 133
+            }
+          ]
+        ],
+        "slot": [
+          21,
+          30
+        ],
+        "kind": "short",
+        "hook": "آلِ عِمۡرَانَ",
+        "total_sec": 33.983125,
         "lang": "en"
       }
     ]
