@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Img, staticFile, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
 import {Fonts, ProceduralBackground} from './visuals';
 
 const GOLD = '#E8B360';
@@ -55,7 +55,7 @@ type Item = {
   en: string;
 };
 
-export const TrendThumbnail: React.FC<{items: Item[]; hook?: string; surahMsg?: string; style?: TrendStyle; lang?: 'en' | 'ar' | 'fa' | 'ku'}> = ({items, hook, surahMsg, style, lang = 'fa'}) => {
+export const TrendThumbnail: React.FC<{items: Item[]; hook?: string; surahMsg?: string; style?: TrendStyle; lang?: 'en' | 'ar' | 'fa' | 'ku'; bgImage?: string}> = ({items, hook, surahMsg, style, lang = 'fa', bgImage}) => {
   const frame = useCurrentFrame();
   const {width, height} = useVideoConfig();
   const f = items[0];
@@ -116,7 +116,19 @@ const GLOW_COLOR = lang === 'en' ? EN_GLOW : `${accent}cc`;
 
   return (
     <AbsoluteFill style={{backgroundColor: '#05070c'}}>
-      <ProceduralBackground index={isGold ? 0 : 1} />
+      {bgImage ? (
+        <AbsoluteFill>
+          <Img
+            src={staticFile(bgImage)}
+            style={{
+              position: 'absolute', inset: 0, width: '100%', height: '100%',
+              objectFit: 'cover', filter: 'brightness(0.82) saturate(1.08)',
+            }}
+          />
+        </AbsoluteFill>
+      ) : (
+        <ProceduralBackground index={isGold ? 0 : 1} />
+      )}
 
       {/* light vignette — lets vibrant bg show through */}
       <AbsoluteFill style={{background: overlayDark}} />
