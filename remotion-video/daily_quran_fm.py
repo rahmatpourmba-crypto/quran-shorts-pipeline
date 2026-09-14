@@ -621,7 +621,7 @@ def _lang_desc(lang: str, ref: str, ayah_ar: str, ayah_en: str) -> list:
             ref,
             ayah_ar,
             "",
-            "تلاوة هادئة بصوت " + RECITER_NAME + " 🌙",
+            "تلاوة بصوت الطالب یاسر الدوسري 🌙",
             "",
             f"\"{ayah_en}\"",
             "",
@@ -668,19 +668,11 @@ def seo_block(items: list, today: str, lang: str = "en") -> tuple:
         ayah_range = (f"{first['code'][:3]} {first['ayahNum']}" if first["ayahNum"] == last["ayahNum"]
                       else f"{first['code'][:3]} {first['ayahNum']}–{last['ayahNum']}")
         desc_ref = f"{first['surahName']} ({first['surahEn']}) {ayah_range.split()[1]}"
-    title = _lang_title(lang, hook, ayah_range, first["code"][:3])
+    title = _lang_title(lang, hook, ayah_range, first["code"][:3]).strip() + f" — تلاوة {surah_ar}"
     title = " ".join(title.split())[:95]
     en = first["en"].split('"')[0].strip()[:110]
     desc_lines = (desc_ref,) + tuple(_lang_desc(lang, desc_ref, first["arabic"], en))
-    tags = ["قرآن", "تلاوت قرآن", "آیه آرامش", "یاسر الدوسری", "quran", "quran recitation", "القرآن الكريم", "تلاوة"]
-    if lang == "en":
-        tags = ["quran", "quran recitation", "sleep", "peace", "Quran for sleep", "Al-Dosari", "calm", "relaxation", "islamic video"]
-    elif lang == "ar":
-        tags = [t.replace("#", "") for t in AR_TAGS.split(" #") if t] + ["قرآن", "تلاوة"]
-    elif lang == "fa":
-        tags = [t.replace("#", "") for t in FA_TAGS.split(" #") if t] + ["قرآن", "تلاوت قرآن"]
-    elif lang == "ku":
-        tags = ["قورئان", "خوێندنی قورئان", "ئارامی", "quran", "kurdish quran", "دوعا", "ئایین"]
+    tags = ["quran", "quran recitation", "آیه آرامش", "القرآن الكريم", "تلاوة", "تلاوت قرآن"]
     return title, "\n".join(desc_lines), tags
 
 
