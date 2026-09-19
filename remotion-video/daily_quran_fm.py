@@ -52,20 +52,18 @@ TARGET_BLOCK_SEC = 38          # aim for ~38s of tilaawah per video
 BLOCK_MAX_SEC   = 42           # hard-ish cap per block (total lands < 50s)
 MAX_AYAH_PER_VIDEO = 14         # many short ayahs may be needed to hit ~38s
 
-# Language → primetime slots (UTC). 9 slots, each tied to the audience region:
-#   EN → EU/global midday + US early/evening
-#   AR → Arabia/Egypt/Maghreb evening window
-#   FA → Iran evening prime (IRST+3:30)
+# Language → Middle-East-evening slots (UTC), all clustered 15:00–21:00 UTC
+# = 18:30–00:30 IRST / 18:00–00:00 Saudi-Egypt. 9 slots, 3+3+3 (EN/AR/FA):
 LANG_SLOTS = [
-    ((10, 30), "en"),  # 06:30 EDT · EU afternoons / global morning  — international
-    ((15,  0), "ar"),  # KSA 18:00 · Egypt 17:00                    — Arabia early eve
-    ((16,  0), "fa"),  # IRST 19:30                                 — Iran evening start
-    ((16, 30), "en"),  # EU 18:30 · US east 12:30                   — international
-    ((18,  0), "fa"),  # IRST 21:30                                 — Iran prime
-    ((18, 30), "ar"),  # KSA 21:30 · Egypt 20:30 · UAE 22:30        — Arabia prime
-    ((20, 30), "fa"),  # IRST 00:00 (late) / Persian diaspora US    — Iran late
-    ((21,  0), "ar"),  # Egypt 23:00 · Maghreb 22:00                — Arabia late
-    ((21, 30), "en"),  # US east 17:30 · US west 14:30              — international
+    ((15,  0), "en"),  # IRST 18:30 · EU 17:00                       — international early
+    ((15, 30), "ar"),  # KSA 18:30 · Egypt 17:30                     — Arabia eve start
+    ((16,  0), "fa"),  # IRST 19:30                                  — Iran eve start
+    ((16, 30), "en"),  # IRST 20:00 · EU 19:30                       — international prime
+    ((17,  0), "ar"),  # KSA 20:00 · Egypt 19:00 · UAE 21:00         — Arabia evening
+    ((17, 30), "fa"),  # IRST 21:00                                  — Iran prime
+    ((18, 30), "ar"),  # KSA 21:30 · Egypt 20:30 · UAE 22:30         — Arabia prime
+    ((20,  0), "fa"),  # IRST 23:30 / Persian diaspora US morning    — Iran late
+    ((21,  0), "en"),  # IRST 00:30 · US east 17:00 · US west 14:00  — international late
 ]
 PUBLISH_SLOTS = [s for s, _ in LANG_SLOTS]
 SLOT_LANG = {s: lang for s, lang in LANG_SLOTS}
