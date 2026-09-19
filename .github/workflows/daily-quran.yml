@@ -38,15 +38,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+      - name: Verify Python (preinstalled on runner)
+        run: python --version
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
+      - name: Verify Node (preinstalled on runner)
+        run: node --version
 
       - name: Install Python deps
         run: |
