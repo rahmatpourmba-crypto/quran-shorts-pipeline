@@ -68,6 +68,17 @@ LANG_SLOTS = [
 PUBLISH_SLOTS = [s for s, _ in LANG_SLOTS]
 SLOT_LANG = {s: lang for s, lang in LANG_SLOTS}
 
+# Curated vertical (9:16) backgrounds, cropped from freely-licensed imagery on
+# Wikimedia Commons (CC BY/CC BY-SA/Public domain). Rotated per block so each
+# Short gets a fresh vibrant backdrop behind the tilaawah.
+BG_IMAGES = [
+    "/backgrounds/bg1_mosque.jpg",  # golden mosque silhouette
+    "/backgrounds/bg2_ocean.jpg",   # sunset over the Atlantic
+    "/backgrounds/bg3_stars.jpg",   # Gazing at the Milky Way (ESO, CC BY)
+    "/backgrounds/bg4_dunes.jpg",   # Mesquite sand dunes at dusk
+    "/backgrounds/bg5_meadow.jpg",  # wild-flower meadow in morning light
+]
+
 # ── surah message → English thumbnail hook ────────────────────────────────────
 # One trending-style English message per surah (the "پیام سوره"). Shown as the
 # headline on TrendThumbnail so each Short carries a meaningful global message.
@@ -1134,7 +1145,8 @@ def main():
         else:
             print(f"  rendering block ({len(items)} ayahs, {sum(durations):.0f}s)...", flush=True)
             surah_msg = SURAH_MESSAGES.get(pairs[0][1]["code"][:3], "")
-            props = {"items": items, "durations": durations, "hook": p.get("hook", ""), "surahMsg": surah_msg, "lang": lang}
+            bg_img = BG_IMAGES[(slot_pos + 1) % len(BG_IMAGES)] if BG_IMAGES else ""
+            props = {"items": items, "durations": durations, "hook": p.get("hook", ""), "surahMsg": surah_msg, "lang": lang, "bg": "image", "bgImage": bg_img}
             ok_v = render_video(video_name, "NatureDaily", props, video)
             ok_t = render_thumb(video_name, "TrendThumbnail", props, thumb) if ok_v else False
             if ok_v:

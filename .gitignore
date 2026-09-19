@@ -23,6 +23,9 @@ trend-video-maker/content/quran_full/audio/
 *.png
 *.log
 
+# Prayed expressly licensed background images for the Shorts pipeline
+!remotion-video/public/backgrounds/*.jpg
+
 # Python
 __pycache__/
 *.pyc
