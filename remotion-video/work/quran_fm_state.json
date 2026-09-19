@@ -1,6 +1,6 @@
 {
-  "short_cursor": 37,
-  "viral_cursor": 24,
+  "short_cursor": 38,
+  "viral_cursor": 25,
   "short_surah_cursor": 3,
   "done": [
     "002001",
@@ -1068,6 +1068,50 @@
         "kind": "short",
         "hook": "آلِ عِمۡرَانَ",
         "total_sec": 33.983125,
+        "lang": "en"
+      }
+    ],
+    "2026-09-19": [
+      {
+        "slots": [
+          [
+            386,
+            {
+              "code": "003094",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 94
+            }
+          ],
+          [
+            387,
+            {
+              "code": "003095",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 95
+            }
+          ],
+          [
+            388,
+            {
+              "code": "003096",
+              "surah": 3,
+              "surah_name": "آلِ عِمۡرَانَ",
+              "surah_en": "Aal-i-Imraan",
+              "ayah_num": 96
+            }
+          ]
+        ],
+        "slot": [
+          10,
+          30
+        ],
+        "kind": "short",
+        "hook": "آلِ عِمۡرَانَ",
+        "total_sec": 38.632999999999996,
         "lang": "en"
       }
     ]
