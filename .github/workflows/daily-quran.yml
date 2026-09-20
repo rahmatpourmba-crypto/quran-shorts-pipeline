@@ -3,17 +3,19 @@ name: quran-daily-shorts
 on:
   schedule:
     - cron: '30 0 * * *'
-    - cron: '30 6 * * *'
-    - cron: '30 12 * * *'
-    - cron: '30 18 * * *'
+    - cron: '30 3 * * *'
+    - cron: '0 10 * * *'
+    - cron: '30 14 * * *'
+    - cron: '0 18 * * *'
   workflow_dispatch:
     inputs:
       count:
-        description: 'Videos to produce (9 = 3+3+3 trilingual)'
+        description: 'Videos to produce (12 = 3AR+1FA+2EN+2KU+2ZH+2HI)'
         required: true
-        default: '9'
+        default: '12'
         type: choice
         options:
+          - '12'
           - '9'
           - '6'
           - '3'
@@ -68,7 +70,7 @@ jobs:
         working-directory: remotion-video
         run: |
           $count = '${{ github.event.inputs.count }}'
-          if ($count -eq '') { $count = '9' }
+          if ($count -eq '') { $count = '12' }
           $now = '${{ github.event.inputs.now }}'
           if ($now -eq 'true') { $now = '--now' } else { $now = '' }
           python -u daily_quran_fm.py --count $count $now
