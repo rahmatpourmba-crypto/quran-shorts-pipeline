@@ -989,6 +989,9 @@ def make_custom_bg_video(bg_image: str, yt=None, publish_day: str | None = None)
     today = publish_day or date.today().isoformat()
     state = load_state()
     plan = state.get("plans", {}).get(today)
+    if plan is not None and len(plan) < VIDEOS_PER_DAY:
+        plan = None
+        state.setdefault("plans", {}).pop(today, None)
     if plan is None:
         plan = build_plan(state, today, VIDEOS_PER_DAY)
         if plan:
@@ -1103,6 +1106,12 @@ def main():
     state = load_state()
     plan_key = publish_day
     plan = state.get("plans", {}).get(plan_key)
+
+    if plan is not None and len(plan) < count:
+        print(f"plan for {plan_key} has only {len(plan)} items < {count}; rebuilding fresh...", flush=True)
+        plan = None
+        if not dry:
+            state.setdefault("plans", {}).pop(plan_key, None)
 
     if plan is None:
         plan = build_plan(state, today, count)
