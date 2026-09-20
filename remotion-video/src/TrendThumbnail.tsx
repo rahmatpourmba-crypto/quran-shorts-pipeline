@@ -22,6 +22,8 @@ const LANG_LABEL: Record<string, string> = {
   ar: 'العربية',
   fa: 'فارسی',
   ku: 'کوردی',
+  zh: '中文',
+  hi: 'हिन्दी',
 };
 
 const BRAND_TOP: Record<string, string> = {
@@ -29,6 +31,8 @@ const BRAND_TOP: Record<string, string> = {
   ar: 'تلاوة القرآن · راحة النفس',
   fa: 'تلاوت قرآن · آرامش',
   ku: 'قرئان خوێندن · ئارامی',
+  zh: '古兰经诵读 · 心灵安宁',
+  hi: 'क़ुरआन की तिलावत · सुकून',
 };
 
 const BRAND_BOTTOM: Record<string, string> = {
@@ -36,6 +40,8 @@ const BRAND_BOTTOM: Record<string, string> = {
   ar: 'اشترك · أعجبك · راحة 🌿',
   fa: 'اشتراک · لایک · آرامش 🌿',
   ku: 'سەبسکرایب · لایک · ئارامی 🌿',
+  zh: '订阅 · 点赞 · 安宁 🌿',
+  hi: 'सब्सक्राइब · लाइक · सुकून 🌿',
 };
 
 const CTAS: Record<string, string> = {
@@ -43,6 +49,8 @@ const CTAS: Record<string, string> = {
   ar: 'سكينة لقلبك · اشترك',
   fa: 'آرامش برای قلبت · دنبال کن',
   ku: 'ئارامی بۆ دڵت · سەبسکرایب',
+  zh: '心灵的安宁 · 点个订阅吧',
+  hi: 'दिल का सुकून · सब्सक्राइब करें',
 };
 
 type Item = {
@@ -55,7 +63,7 @@ type Item = {
   en: string;
 };
 
-export const TrendThumbnail: React.FC<{items: Item[]; hook?: string; surahMsg?: string; style?: TrendStyle; lang?: 'en' | 'ar' | 'fa' | 'ku'; bgImage?: string}> = ({items, hook, surahMsg, style, lang = 'fa', bgImage}) => {
+export const TrendThumbnail: React.FC<{items: Item[]; hook?: string; surahMsg?: string; style?: TrendStyle; lang?: 'en' | 'ar' | 'fa' | 'ku' | 'zh' | 'hi'; bgImage?: string}> = ({items, hook, surahMsg, style, lang = 'fa', bgImage}) => {
   const frame = useCurrentFrame();
   const {width, height} = useVideoConfig();
   const f = items[0];
@@ -64,6 +72,7 @@ export const TrendThumbnail: React.FC<{items: Item[]; hook?: string; surahMsg?: 
   // per-language headline, kept meaningful (never chopped mid-sentence):
   //   en -> curated english surah message (or en ayah)  ar -> arabic hook
   //   fa -> persian translation of the ayah             ku -> hook/fa fallback
+  //   zh/hi -> localized hook (or surah message), else en ayah
   const stripBasmala = (s: string) => {
     const parts = s.trim().split(' ');
     return parts[0] && parts[0].includes('بِسْمِ') ? parts.slice(4).join(' ') : s;
@@ -72,6 +81,8 @@ export const TrendThumbnail: React.FC<{items: Item[]; hook?: string; surahMsg?: 
     lang === 'en' ? (surahMsg || f?.en || hook || aria) :
     lang === 'ar' ? (hook || stripBasmala(aria)) :
     lang === 'ku' ? (hook || f?.fa || aria) :
+    lang === 'zh' ? (hook || surahMsg || aria) :
+    lang === 'hi' ? (hook || surahMsg || aria) :
     (f?.fa || hook || aria);
   const baseMax = style?.max_words && style.max_words > 1 ? style.max_words : 3;
   const maxWords = lang === 'en' ? Math.max(baseMax, 4) : (lang === 'ar' ? 10 : 8);
@@ -84,6 +95,10 @@ export const TrendThumbnail: React.FC<{items: Item[]; hook?: string; surahMsg?: 
       ? `${f?.surahName ?? ''} ${f?.ayahNum ?? ''} · تلاوة هادئة`
       : lang === 'ku'
       ? (f?.fa ? faShort : 'تلاوت قرآن')
+      : lang === 'zh'
+      ? `${f?.surahEn ?? ''} ${f?.ayahNum ?? ''} · 每日古兰经`
+      : lang === 'hi'
+      ? `${f?.surahEn ?? ''} ${f?.ayahNum ?? ''} · रोज़ क़ुरआन`
       : `${f?.surahEn ?? ''} ${f?.ayahNum ?? ''} · هر روز یک آیه`;
   const hlen = hookText.length;
   const textScale = style?.text_scale ?? 1.0;
@@ -107,12 +122,24 @@ const EN_FONT = '"Segoe UI", "Arial Black", system-ui, sans-serif';
 // strong English headline colors (trend trick: bold cold/red text on warm bg)
 const EN_COLOR = '#FFFFFF';     // true white — max contrast, never washed out
 const EN_GLOW = 'rgba(140,205,255,0.95)';
-const GLOW_COLOR = lang === 'en' ? EN_GLOW : `${accent}cc`;
+const GLOW_COLOR = lang === 'en' || lang === 'zh' || lang === 'hi' ? EN_GLOW : `${accent}cc`;
   const bgIndex = isGold ? 0 : 1; // golden night vs emerald deep
   const overlayDark = isDeep
     ? 'linear-gradient(180deg, rgba(5,7,12,0.04) 0%, rgba(5,7,12,0.22) 48%, rgba(5,7,12,0.60) 100%)'
     : 'linear-gradient(180deg, rgba(5,7,12,0.02) 0%, rgba(5,7,12,0.16) 44%, rgba(5,7,12,0.52) 100%)';
-  const dir = lang === 'en' || lang === 'ku' ? 'ltr' : 'rtl';
+  const dir = lang === 'en' || lang === 'ku' || lang === 'zh' || lang === 'hi' ? 'ltr' : 'rtl';
+  // per-script font family — system CJK / Devanagari fonts fall back on Windows Chrome
+  const HEAD_FONT =
+    lang === 'zh'
+      ? '"Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif'
+      : lang === 'hi'
+      ? '"Nirmala UI", "Mangal", "Noto Sans Devanagari", sans-serif'
+      : lang === 'en'
+      ? '"Segoe UI", "Arial Black", system-ui, sans-serif'
+      : Fonts.quran;
+  const SUB_FONT =
+    lang === 'zh' ? '"Microsoft YaHei", sans-serif' :
+    lang === 'hi' ? '"Nirmala UI", "Mangal", sans-serif' : Fonts.fa;
 
   return (
     <AbsoluteFill style={{backgroundColor: '#05070c'}}>
@@ -158,17 +185,17 @@ const GLOW_COLOR = lang === 'en' ? EN_GLOW : `${accent}cc`;
           borderRadius: 26, border: `1px solid ${accentLight}44`,
         }}>
         <div style={{
-          fontFamily: lang === 'en' ? EN_FONT : Fonts.quran,
-          fontWeight: lang === 'en' ? 900 : 900,
+          fontFamily: HEAD_FONT,
+          fontWeight: lang === 'en' || lang === 'zh' || lang === 'hi' ? 900 : 900,
           fontSize: hookSize,
-          color: lang === 'en' ? EN_COLOR : WHITE,
+          color: lang === 'en' || lang === 'zh' || lang === 'hi' ? EN_COLOR : WHITE,
           textAlign: 'center',
           direction: dir,
           lineHeight: 1.2,
-          letterSpacing: lang === 'en' ? 1 : 0,
-          textTransform: lang === 'en' ? 'uppercase' : 'none',
+          letterSpacing: lang === 'en' || lang === 'zh' || lang === 'hi' ? 1 : 0,
+          textTransform: lang === 'en' || lang === 'zh' || lang === 'hi' ? 'uppercase' : 'none',
           filter: strongGlow ? `drop-shadow(0 0 14px ${GLOW_COLOR})` : `drop-shadow(0 0 8px ${GLOW_COLOR})`,
-          WebkitTextStroke: lang === 'en' ? `${Math.max(3, height * 0.011)}px rgba(5,7,12,0.92)` : `${Math.max(3, height * 0.011)}px rgba(5,7,12,0.78)`,
+          WebkitTextStroke: lang === 'en' || lang === 'zh' || lang === 'hi' ? `${Math.max(3, height * 0.011)}px rgba(5,7,12,0.92)` : `${Math.max(3, height * 0.011)}px rgba(5,7,12,0.78)`,
           textShadow: strongGlow
             ? '0 2px 0 #05070c, 0 4px 8px rgba(0,0,0,0.9), 0 10px 26px rgba(0,0,0,0.75)'
             : '0 2px 0 #05070c, 0 4px 8px rgba(0,0,0,0.85), 0 10px 22px rgba(0,0,0,0.7)',
@@ -191,14 +218,14 @@ const GLOW_COLOR = lang === 'en' ? EN_GLOW : `${accent}cc`;
         </div>
 
         {/* short benefit line (4 words) */}
-        <div style={{fontFamily: Fonts.fa, fontWeight: 800, fontSize: sub, color: '#FDF4DE', textAlign: 'center', direction: dir, marginTop: height * 0.03, textShadow: '0 3px 10px rgba(0,0,0,0.85)'}}>
+        <div style={{fontFamily: SUB_FONT, fontWeight: 800, fontSize: sub, color: '#FDF4DE', textAlign: 'center', direction: dir, marginTop: height * 0.03, textShadow: '0 3px 10px rgba(0,0,0,0.85)'}}>
           {subLine}
         </div>
       </AbsoluteFill>
 
       {/* consistent brand strip — bottom */}
       <AbsoluteFill style={{justifyContent: 'flex-end', alignItems: 'center', paddingBottom: height * 0.045}}>
-        <div style={{fontFamily: Fonts.fa, fontWeight: 900, fontSize: height * 0.04, color: WHITE, background: isGold ? 'linear-gradient(135deg, rgba(199,142,38,0.75), rgba(232,179,96,0.85))' : 'linear-gradient(135deg, rgba(23,110,74,0.8), rgba(97,190,142,0.9))', border: `2px solid ${accentLight}`, padding: `${height * 0.012}px ${width * 0.03}px`, borderRadius: 50, boxShadow: `0 6px 26px rgba(0,0,0,0.55), 0 0 34px ${accentLight}66`, whiteSpace: 'nowrap'}}>
+        <div style={{fontFamily: SUB_FONT, fontWeight: 900, fontSize: height * 0.04, color: WHITE, background: isGold ? 'linear-gradient(135deg, rgba(199,142,38,0.75), rgba(232,179,96,0.85))' : 'linear-gradient(135deg, rgba(23,110,74,0.8), rgba(97,190,142,0.9))', border: `2px solid ${accentLight}`, padding: `${height * 0.012}px ${width * 0.03}px`, borderRadius: 50, boxShadow: `0 6px 26px rgba(0,0,0,0.55), 0 0 34px ${accentLight}66`, whiteSpace: 'nowrap'}}>
           {BRAND_BOTTOM[lang]}
         </div>
       </AbsoluteFill>

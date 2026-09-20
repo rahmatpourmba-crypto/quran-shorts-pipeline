@@ -43,27 +43,36 @@ import os as _os
 RECITER = _os.environ.get("QURAN_RECITER", "Yasser_Ad-Dussary_128kbps")
 RECITER_NAME = _os.environ.get("QURAN_RECITER_NAME", "Yasser Al-Dosari")
 
-# Quick-config for the trilingual 45-day push (9 Shorts/day in 3+3+3):
+# Quick-config for the multilingual 12-Shorts/day push:
 #   • each video targets ~42–45s of tilaawah → lands well under the 60s cap
-#   • 3 international (EN) + 3 Arabic (AR) + 3 Persian (FA) every day
+#   • 3 Arabic (AR) + 1 Persian (FA) + 2 English (EN) + 2 Kurdish (KU)
+#     + 2 Chinese (ZH) + 2 Hindi (HI) every day
 #   • every language publishes at ITS region primetime (SLOT_LANG below)
-VIDEOS_PER_DAY = 9
+VIDEOS_PER_DAY = 12
 TARGET_BLOCK_SEC = 38          # aim for ~38s of tilaawah per video
 BLOCK_MAX_SEC   = 42           # hard-ish cap per block (total lands < 50s)
 MAX_AYAH_PER_VIDEO = 14         # many short ayahs may be needed to hit ~38s
 
-# Language → Middle-East-evening slots (UTC), all clustered 15:00–21:00 UTC
-# = 18:30–00:30 IRST / 18:00–00:00 Saudi-Egypt. 9 slots, 3+3+3 (EN/AR/FA):
+# Language → regional-prime slots (UTC). 12 videos/day:
+#   ZH (China UTC+8): 20:00–21:00 CST = 12:00–13:00 UTC
+#   HI (India UTC+5:30): 20:00–20:45 IST = 14:30–15:15 UTC
+#   AR (Gulf UTC+3/4): 20:00–22:30 local = 17:00–18:30 UTC
+#   FA (Iran UTC+3:30): 20:30–22:00 IRST = 17:00–18:30 UTC
+#   KU (Kurdistan UTC+3): 20:30–22:00 = 17:30–19:00 UTC
+#   EN (global): EU/east-coast friendly morning + evening
 LANG_SLOTS = [
-    ((15,  0), "en"),  # IRST 18:30 · EU 17:00                       — international early
-    ((15, 30), "ar"),  # KSA 18:30 · Egypt 17:30                     — Arabia eve start
-    ((16,  0), "fa"),  # IRST 19:30                                  — Iran eve start
-    ((16, 30), "en"),  # IRST 20:00 · EU 19:30                       — international prime
-    ((17,  0), "ar"),  # KSA 20:00 · Egypt 19:00 · UAE 21:00         — Arabia evening
-    ((17, 30), "fa"),  # IRST 21:00                                  — Iran prime
-    ((18, 30), "ar"),  # KSA 21:30 · Egypt 20:30 · UAE 22:30         — Arabia prime
-    ((20,  0), "fa"),  # IRST 23:30 / Persian diaspora US morning    — Iran late
-    ((21,  0), "en"),  # IRST 00:30 · US east 17:00 · US west 14:00  — international late
+    ((12,  0), "zh"),  # Beijing 20:00 · Shanghai 20:00            — China prime
+    ((12, 30), "zh"),  # Beijing 20:30                            — China prime
+    ((14, 30), "hi"),  # Mumbai 20:00 · Delhi 20:00               — India prime
+    ((15,  0), "hi"),  # Mumbai 20:30                            — India prime
+    ((16,  0), "en"),  # EU 18:00 · US east 11:00                 — international early
+    ((16, 30), "ar"),  # KSA 19:30 · UAE 20:30 · Egypt 18:30      — Arabia eve start
+    ((17,  0), "fa"),  # IRST 20:30                              — Iran prime
+    ((17, 30), "ar"),  # KSA 20:30 · UAE 21:30 · Egypt 19:30      — Arabia evening
+    ((18,  0), "ku"),  # KRG 21:00 · Türkiye 21:00                — Kurdish evening
+    ((18, 30), "ar"),  # KSA 21:30 · Egypt 20:30 · UAE 22:30      — Arabia prime
+    ((19,  0), "ku"),  # KRG 22:00 · Türkiye 22:00                — Kurdish prime
+    ((19, 30), "en"),  # EU 21:30 · US east 14:30 · US west 11:30 — international prime
 ]
 PUBLISH_SLOTS = [s for s, _ in LANG_SLOTS]
 SLOT_LANG = {s: lang for s, lang in LANG_SLOTS}
@@ -198,6 +207,41 @@ SURAH_MESSAGES = {
     "113": "Run to Him from all harm",
     "114": "Refuge from the whisperer",
 }
+
+# ── localized surah messages (AR / FA) ─────────────────────────────────────────
+# Loaded from public/data/surah_messages.json (bilingual build so every language's
+# thumbnail carries the «پیام سوره» in its own script). KEY: surah code 001–114.
+_SURAH_MSGS = None
+def _localized_msgs():
+    """Return {code: {en, ar, fa}} loaded from public/data/surah_messages.json."""
+    global _SURAH_MSGS
+    if _SURAH_MSGS is not None:
+        return _SURAH_MSGS
+    _SURAH_MSGS = {}
+    p = ROOT / "public" / "data" / "surah_messages.json"
+    try:
+        if p.exists():
+            data = json.loads(p.read_text(encoding="utf-8"))
+            for code, langs in data.items():
+                if isinstance(langs, dict):
+                    _SURAH_MSGS[code] = {
+                        "en": langs.get("en", SURAH_MESSAGES.get(code, "")),
+                        "ar": langs.get("ar", langs.get("en", "")),
+                        "fa": langs.get("fa", langs.get("en", "")),
+                    }
+    except Exception as e:
+        print(f"WARN: failed to load surah_messages.json ({e}); using EN fallback", flush=True)
+    # fill any gaps from the inline English dict
+    for code, msg in SURAH_MESSAGES.items():
+        _SURAH_MSGS.setdefault(code, {"en": msg, "ar": msg, "fa": msg})
+    return _SURAH_MSGS
+
+def _surah_msg(code: str, lang: str) -> str:
+    """Surah message localized for the thumbnail's language."""
+    d = _localized_msgs().get(code)
+    if not d:
+        return SURAH_MESSAGES.get(code, "")
+    return d.get(lang, d.get("en", ""))
 IRST = timezone(timedelta(hours=3, minutes=30))
 
 WORK.mkdir(parents=True, exist_ok=True)
@@ -586,10 +630,39 @@ HOOK_POOL_EN = [
     "Peace for a tired heart 🌙",
 ]
 
+HOOK_POOL_KU = [
+    "ئاوازێك بۆ دڵێكی ئارام 💛",
+    "ئایەتێك دڵ ئارام دەكات 🕊",
+    "وا دڵەكەت پاك ببێتەوە 🌿",
+    "خولەكێك ئارامی راستەقینە ✨",
+    "ئایەتێك بۆ گەرمیی دڵەكەت 🍃",
+    "ئارامی بۆ دڵێكی ماندوو 🌙",
+]
+
+HOOK_POOL_ZH = [
+    "这段经文让心灵平静 💛",
+    "让这节经文治愈你 🕊",
+    "聆听古兰经，找到安宁 🌿",
+    "真正宁静的一分钟 ✨",
+    "抚平焦虑的经文 🍃",
+    "给疲惫心灵的安宁 🌙",
+]
+
+HOOK_POOL_HI = [
+    "यह आयत दिल को शांत करती है 💛",
+    "इस आयत से दिल को सुकून मिलता है 🕊",
+    "क़ुरआन की तिलावत, मन की शांति 🌿",
+    "एक मिनट की सच्ची शांति ✨",
+    "तनाव को पिघला देने वाली आयत 🍃",
+    "थके दिल के लिए सुकून 🌙",
+]
+
 AR_TAGS = "#القرآن_الكريم #quran #اكسبلور #الرحمن #القران #تلاوة #وَقَالَ_رَبُّكُم #quranrecitation #اللهم_صل_وسلم_على_نبينا_محمد #عبدالرحمن_عبدالصمد"
 FA_TAGS = "#قرآن #تلاوت_قرآن #آیه_آرامش #یاسر_الدوسری #آرامش_قلب"
 EN_TAGS = "#quran #quranrecitation #sleep #islam #calm #dua #quranforsleep #muslim #relax #peace"
-KU_TAGS = "#قورئان #quran #ئارامی #خۆ" "ڕاستكان #dua #islam #کوردی"
+KU_TAGS = "#قورئان #quran #ئارامی #خۆڕاستی #dua #islam #کوردی"
+ZH_TAGS = "#古兰经 #古蘭經 #quran #tilaawah #islam #sleep #القران  #quranrecitation"
+HI_TAGS = "#क़ुरआन #कुरान #quran #tilaawah #islam #sukoon #quranrecitation"
 KURDISH_SUFFIX = " · کوردی"
 
 def _pick_hook(lang: str, code: str) -> str:
@@ -598,6 +671,12 @@ def _pick_hook(lang: str, code: str) -> str:
         return HOOK_POOL_EN[idx]
     if lang == "ar":
         return HOOK_POOL_AR[idx]
+    if lang == "ku":
+        return HOOK_POOL_KU[idx]
+    if lang == "zh":
+        return HOOK_POOL_ZH[idx]
+    if lang == "hi":
+        return HOOK_POOL_HI[idx]
     return HOOK_POOL_FA[idx]
 
 def _lang_title(lang: str, hook: str, ayah_range: str, code: str) -> str:
@@ -608,6 +687,10 @@ def _lang_title(lang: str, hook: str, ayah_range: str, code: str) -> str:
         return f"{hook} | {ayah_range} "
     if lang == "ku":
         return f"{hook} · کوردی | {ayah_range} "
+    if lang == "zh":
+        return f"{hook} | {ayah_range} "
+    if lang == "hi":
+        return f"{hook} | {ayah_range} "
     return f"{hook} | {ayah_range} "
 
 def _lang_desc(lang: str, ref: str, ayah_ar: str, ayah_en: str) -> list:
@@ -647,6 +730,28 @@ def _lang_desc(lang: str, ref: str, ayah_ar: str, ayah_en: str) -> list:
             f"خوێندنی قورئان بە دەنگی {RECITER_NAME} 🌙 · {ayah_en}",
             "",
             KU_TAGS,
+            "",
+            "#Shorts",
+        ]
+    if lang == "zh":
+        return [
+            ref,
+            ayah_ar,
+            "",
+            f"《古兰经》诵读 · {RECITER_NAME} 🌙 · {ayah_en}",
+            "",
+            ZH_TAGS,
+            "",
+            "#Shorts",
+        ]
+    if lang == "hi":
+        return [
+            ref,
+            ayah_ar,
+            "",
+            f"क़ुरआन की तिलावत · {RECITER_NAME} 🌙 · {ayah_en}",
+            "",
+            HI_TAGS,
             "",
             "#Shorts",
         ]
@@ -814,7 +919,7 @@ def mark_thumb_props(props):
         return props
 
 
-_LANG_CYCLE = ["en"]  # world-language strategy: every channel English only
+_LANG_CYCLE = ["en", "ar", "fa", "ku", "zh", "hi"]  # multilingual audience strategy
 
 
 def next_lang_cycle() -> str:
@@ -940,7 +1045,7 @@ def make_custom_bg_video(bg_image: str, yt=None, publish_day: str | None = None)
         print(f"[custom-bg] already uploaded {video_name}", flush=True)
         return None
     lang = pending.get("lang", "en")
-    surah_msg = SURAH_MESSAGES.get(pairs[0][1]["code"][:3], "")
+    surah_msg = _surah_msg(pairs[0][1]["code"][:3], lang)
     props = {"items": items, "durations": durations, "hook": pending.get("hook", ""),
              "surahMsg": surah_msg, "lang": lang, "bg": "image", "bgImage": bg_image}
     print(f"[custom-bg] rendering {ref}  bg={bg_image}", flush=True)
@@ -1144,7 +1249,7 @@ def main():
             ok_v, ok_t = True, True
         else:
             print(f"  rendering block ({len(items)} ayahs, {sum(durations):.0f}s)...", flush=True)
-            surah_msg = SURAH_MESSAGES.get(pairs[0][1]["code"][:3], "")
+            surah_msg = _surah_msg(pairs[0][1]["code"][:3], lang)
             bg_img = BG_IMAGES[(slot_pos + 1) % len(BG_IMAGES)] if BG_IMAGES else ""
             props = {"items": items, "durations": durations, "hook": p.get("hook", ""), "surahMsg": surah_msg, "lang": lang, "bg": "image", "bgImage": bg_img}
             ok_v = render_video(video_name, "NatureDaily", props, video)
