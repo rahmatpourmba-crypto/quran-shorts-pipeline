@@ -1,6 +1,6 @@
 {
-  "short_cursor": 39,
-  "viral_cursor": 0,
+  "short_cursor": 40,
+  "viral_cursor": 1,
   "short_surah_cursor": 3,
   "done": [
     "002001",
@@ -1162,6 +1162,50 @@
         "kind": "short",
         "hook": "آلِ عِمۡرَانَ",
         "total_sec": 41.428125,
+        "lang": "zh"
+      }
+    ],
+    "2026-09-21": [
+      {
+        "slots": [
+          [
+            199,
+            {
+              "code": "002193",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 193
+            }
+          ],
+          [
+            200,
+            {
+              "code": "002194",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 194
+            }
+          ],
+          [
+            201,
+            {
+              "code": "002195",
+              "surah": 2,
+              "surah_name": "البَقَرَةِ",
+              "surah_en": "Al-Baqara",
+              "ayah_num": 195
+            }
+          ]
+        ],
+        "slot": [
+          12,
+          0
+        ],
+        "kind": "short",
+        "hook": "البَقَرَةِ",
+        "total_sec": 37.0559375,
         "lang": "zh"
       }
     ]
