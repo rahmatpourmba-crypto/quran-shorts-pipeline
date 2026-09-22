@@ -1,0 +1,94 @@
+name: quran-daily-hosted
+
+on:
+  schedule:
+    - cron: '30 0 * * *'
+    - cron: '30 3 * * *'
+    - cron: '0 10 * * *'
+    - cron: '30 14 * * *'
+    - cron: '0 18 * * *'
+  workflow_dispatch:
+    inputs:
+      count:
+        description: 'Videos to produce (12 = 3AR+1FA+2EN+2KU+2ZH+2HI)'
+        required: true
+        default: '12'
+        type: choice
+        options:
+          - '12'
+          - '9'
+          - '6'
+          - '3'
+          - '1'
+      now:
+        description: 'Publish immediately (skip scheduled publish slots)'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: quran-hosted
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-upload:
+    runs-on: windows-latest
+    env:
+      QURAN_RECITER: Yasser_Ad-Dussary_128kbps
+      QURAN_RECITER_NAME: Yasser Al-Dosari
+      PYTHONIOENCODING: utf-8
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify Python (preinstalled on runner)
+        run: python --version
+
+      - name: Verify Node (preinstalled on runner)
+        run: node --version
+
+      - name: Install Python deps
+        run: |
+          pip install --disable-pip-version-check -q requests numpy pillow google-api-python-client google-auth google-auth-httplib2 google-auth-oauthlib imageio-ffmpeg mutagen
+
+      - name: Cache node_modules (remotion)
+        uses: actions/cache@v4
+        with:
+          path: remotion-video/node_modules
+          key: remotion-node-${{ hashFiles('remotion-video/package-lock.json') }}
+
+      - name: Install Node deps (remotion)
+        working-directory: remotion-video
+        run: npm ci
+
+      - name: Verify Chrome
+        run: |
+          if (Test-Path 'C:\Program Files\Google\Chrome\Application\chrome.exe') { Write-Host 'chrome ok' } else { Write-Host 'CHROME MISSING'; exit 1 }
+
+      - name: Restore OAuth token (secret)
+        env:
+          TOKEN_AUTH_B64: ${{ secrets.TOKEN_AUTH_B64 }}
+        run: |
+          if (-not $env:TOKEN_AUTH_B64) { Write-Host 'TOKEN_AUTH_B64 secret is empty'; exit 1 }
+          [IO.File]::WriteAllBytes('trend-video-maker/token_aya.pickle', [Convert]::FromBase64String($env:TOKEN_AUTH_B64))
+          python -c "import pickle;c=pickle.load(open('trend-video-maker/token_aya.pickle','rb'));print('token ok:',bool(getattr(c,'refresh_token',None)))"
+
+      - name: Cache tilaawah audio (public/tilawat)
+        uses: actions/cache@v4
+        with:
+          path: remotion-video/public/tilawat
+          key: tilawat-${{ env.QURAN_RECITER }}-${{ hashFiles('remotion-video/src/segments.json') }}
+          restore-keys: |
+            tilawat-${{ env.QURAN_RECITER }}-
+
+      - name: Run daily pipeline
+        working-directory: remotion-video
+        run: |
+          $count = '${{ github.event.inputs.count }}'
+          if ($count -eq '') { $count = '12' }
+          $now = '${{ github.event.inputs.now }}'
+          if ($now -eq 'true') { $now = '--now' } else { $now = '' }
+          python -u daily_quran_fm.py --count $count $now
