@@ -63,11 +63,11 @@ def build_long_video() -> Path | None:
         for seg, _ in selected:
             f.write(f"file '{str(seg).replace(chr(92), chr(47))}'\n")
 
-    # Concatenate audio into one mp3
+    # Concatenate audio into one mp3 using libmp3lame
     audio_out = OUT_DIR / "long_audio.mp3"
     print("[long] Concatenating audio...", flush=True)
     subprocess.run([FFMPEG, "-f", "concat", "-safe", "0", "-i", str(concat_list),
-                    "-c:a", "aac", "-b:a", AUDIO_BITRATE, "-y", str(audio_out)],
+                    "-c:a", "libmp3lame", "-b:a", "192k", "-y", str(audio_out)],
                    check=True)
     concat_list.unlink()
 
