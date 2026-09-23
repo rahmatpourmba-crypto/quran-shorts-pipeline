@@ -69,10 +69,11 @@ def clean_orphans(yt, limit=8):
 
 
 def upload(yt, video, thumb, title, desc, tags=None, privacy="public",
-           made_for_kids=False, category_id=27, publish_at=None):
+           made_for_kids=False, category_id=27, publish_at=None, skip_orphans=False):
     from googleapiclient.http import MediaFileUpload
 
-    clean_orphans(yt)
+    if not skip_orphans:
+        clean_orphans(yt)
     if publish_at:
         from datetime import datetime, timezone
         try:
