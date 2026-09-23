@@ -92,3 +92,8 @@ jobs:
           $now = '${{ github.event.inputs.now }}'
           if ($now -eq 'true') { $now = '--now' } else { $now = '' }
           python -u daily_quran_fm.py --count $count $now
+
+      - name: Generate long-form video (60 min)
+        if: github.event.inputs.count == '12'
+        working-directory: remotion-video
+        run: python -u long_form.py
