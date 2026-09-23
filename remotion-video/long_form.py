@@ -143,8 +143,8 @@ def main():
             "islam", "calm", "dua", "meditation", "peace"]
 
     yt = auth(str(TOKEN))
-    vid = upload(yt, video, BG_PATH, title, desc, tags=tags,
-                 privacy="public", category_id=27)
+vid = upload(yt, video, BG_PATH, title, desc, tags=tags,
+                 privacy="public", category_id=27, skip_orphans=True)
     if vid:
         # Patch description with real vid_id
         print(f"[long] Uploaded: https://youtu.be/{vid}", flush=True)
