@@ -43,38 +43,32 @@ import os as _os
 RECITER = _os.environ.get("QURAN_RECITER", "Yasser_Ad-Dussary_128kbps")
 RECITER_NAME = _os.environ.get("QURAN_RECITER_NAME", "Yasser Al-Dosari")
 
-# Quick-config for the multilingual daily push:
-#   • each video targets ~32–36s of tilaawah → the viral sweet spot (<40s)
-#   • 10 Shorts + 1 long-form/day = 11 API uploads, safely under YouTube's
-#     ~13 'Video Uploads per day' quota so cron never hits a 429 wall
-#   • language slots: 3 Arabic (AR) + 1 Persian (FA) + 2 English (EN)
-#     + 2 Kurdish (KU) + 1 Chinese (ZH) + 1 Hindi (HI) every day
-#   • every language publishes at ITS region primetime (SLOT_LANG below)
+# Quick-config for the audience-first daily push (>50% of viewers
+# are in Egypt 🇪🇬 · Algeria 🇩🇿 · Iraq 🇮🇶 → Arabic-region primetime).
+#   • 9 Arabic + 1 Persian slot, ALL publish in Egypt/Iraq/Algeria
+#     evening primetime (19:00–22:30 local) so they trend locally.
+#   • every Arabic tag carries #مصري #الجزائر #العراق #مسلمات.
+#   • 10 Shorts + 1 long-form/day = 11 API uploads, safely under
+#     YouTube's ~13 'Video Uploads per day' quota (never a 429 wall).
 VIDEOS_PER_DAY = 10
-TARGET_BLOCK_SEC = 33          # aim for ~33s of tilaawah per video (viral <40s)
-BLOCK_MAX_SEC   = 36           # hard-ish cap per block (total lands < 42s)
-MAX_AYAH_PER_VIDEO = 14         # many short ayahs may be needed to hit ~33s
+TARGET_BLOCK_SEC = 33
+BLOCK_MAX_SEC   = 36
+MAX_AYAH_PER_VIDEO = 14
 
-# Language → regional-prime slots (UTC). 12 videos/day:
-#   ZH (China UTC+8): 20:00–21:00 CST = 12:00–13:00 UTC
-#   HI (India UTC+5:30): 20:00–20:45 IST = 14:30–15:15 UTC
-#   AR (Gulf UTC+3/4): 20:00–22:30 local = 17:00–18:30 UTC
-#   FA (Iran UTC+3:30): 20:30–22:00 IRST = 17:00–18:30 UTC
-#   KU (Kurdistan UTC+3): 20:30–22:00 = 17:30–19:00 UTC
-#   EN (global): EU/east-coast friendly morning + evening
+# Language → regional-prime slots (UTC). Target evening primetime
+# for Egypt (UTC+2/+3), Algeria (UTC+1/+2), Iraq (UTC+3):
+#   16:30–20:30 UTC → 19:00–22:30 Egypt/Iraq · 18:00–21:30 Algeria.
+# One Persian slot (Iran, UTC+3:30) at 16:30 UTC = 20:00 Iran.
 LANG_SLOTS = [
-    ((12,  0), "zh"),  # Beijing 20:00 · Shanghai 20:00            — China prime
-    ((12, 30), "zh"),  # Beijing 20:30                            — China prime
-    ((14, 30), "hi"),  # Mumbai 20:00 · Delhi 20:00               — India prime
-    ((15,  0), "hi"),  # Mumbai 20:30                            — India prime
-    ((16,  0), "en"),  # EU 18:00 · US east 11:00                 — international early
-    ((16, 30), "ar"),  # KSA 19:30 · UAE 20:30 · Egypt 18:30      — Arabia eve start
-    ((17,  0), "fa"),  # IRST 20:30                              — Iran prime
-    ((17, 30), "ar"),  # KSA 20:30 · UAE 21:30 · Egypt 19:30      — Arabia evening
-    ((18,  0), "ku"),  # KRG 21:00 · Türkiye 21:00                — Kurdish evening
-    ((18, 30), "ar"),  # KSA 21:30 · Egypt 20:30 · UAE 22:30      — Arabia prime
-    ((19,  0), "ku"),  # KRG 22:00 · Türkiye 22:00                — Kurdish prime
-    ((19, 30), "en"),  # EU 21:30 · US east 14:30 · US west 11:30 — international prime
+    ((16,30), "fa"),  # Iran 20:00 · Algeria 17:30 · Iraq 19:30 · Egypt 18:30
+    ((17,0), "ar"),   # Egypt 19:00 · Iraq 20:00 · Algeria 18:00
+    ((17,30), "ar"),  # Egypt 19:30 · Iraq 20:30 · Algeria 18:30
+    ((18,0), "ar"),   # Egypt 20:00 · Iraq 21:00 · Algeria 19:00
+    ((18,30), "ar"),  # Egypt 20:30 · Iraq 21:30 · Algeria 19:30
+    ((19,0), "ar"),   # Egypt 21:00 · Iraq 22:00 · Algeria 20:00
+    ((19,30), "ar"),  # Egypt 21:30 · Iraq 22:30 · Algeria 20:30
+    ((20,0), "ar"),   # Egypt 22:00 · Iraq 23:00 · Algeria 21:00
+    ((20,30), "ar"),  # Egypt 22:30 · Iraq 23:30 · Algeria 21:30
 ]
 PUBLISH_SLOTS = [s for s, _ in LANG_SLOTS]
 SLOT_LANG = {s: lang for s, lang in LANG_SLOTS}
@@ -659,7 +653,8 @@ HOOK_POOL_HI = [
     "थके दिल के लिए सुकून 🌙",
 ]
 
-AR_TAGS = "#القرآن_الكريم #quran #اكسبلور #الرحمن #القران #تلاوة #quranrecitation #whatsappstatus #islamicstatus #ياسر_الدوسري"
+AR_TAGS = ("#القرآن_الكريم #quran #اكسبلور #الرحمن #القران #تلاوة #quranrecitation "
+           "#whatsappstatus #islamicstatus #مصري #الجزائر #العراق #مسلمات #ياسر_الدوسري")
 FA_TAGS = "#قرآن #تلاوت_قرآن #آیه_آرامش #یاسر_الدوسری #آرامش_قلب #whatsappstatus #islamicstatus"
 EN_TAGS = "#quran #quranrecitation #sleep #islam #calm #dua #quranforsleep #whatsappstatus #islamicstatus #yaseraldossary"
 KU_TAGS = "#قورئان #quran #ئارامی #خۆڕاستی #dua #islam #کوردی #whatsappstatus #islamicstatus"
