@@ -36,14 +36,13 @@ jobs:
           fetch-depth: 0
 
       - name: Push mirror to backup repo
-        if: ${{ secrets.MIRROR_TOKEN != '' && vars.MIRROR_DEST != '' }}
         env:
           MIRROR_TOKEN: ${{ secrets.MIRROR_TOKEN }}
           MIRROR_DEST: ${{ vars.MIRROR_DEST }}
         run: |
+          if [ -z "${MIRROR_TOKEN}" ] || [ -z "${MIRROR_DEST}" ]; then
+            echo "mirror-backup: MIRROR_TOKEN secret or MIRROR_DEST variable not set - skipping"
+            exit 0
+          fi
           git push --mirror "https://x-access-token:${MIRROR_TOKEN}@github.com/${MIRROR_DEST}.git"
           echo "mirror ok -> ${MIRROR_DEST}"
-
-      - name: Mirror not configured (set MIRROR_TOKEN secret + MIRROR_DEST var)
-        if: ${{ secrets.MIRROR_TOKEN == '' || vars.MIRROR_DEST == '' }}
-        run: echo 'mirror-backup: MIRROR_TOKEN secret or MIRROR_DEST variable not set - skipping'
