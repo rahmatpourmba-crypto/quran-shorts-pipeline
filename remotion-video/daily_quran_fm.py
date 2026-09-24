@@ -1050,7 +1050,7 @@ def make_custom_bg_video(bg_image: str, yt=None, publish_day: str | None = None)
     lang = pending.get("lang", "en")
     surah_msg = _surah_msg(pairs[0][1]["code"][:3], lang)
     props = {"items": items, "durations": durations, "hook": pending.get("hook", ""),
-             "surahMsg": surah_msg, "lang": lang, "bg": "image", "bgImage": bg_image}
+              "surahMsg": surah_msg, "lang": lang, "bg": "video"}
     print(f"[custom-bg] rendering {ref}  bg={bg_image}", flush=True)
     ok_v = render_video(video_name, "NatureDaily", props, video)
     ok_t = render_thumb(video_name, "TrendThumbnail", props, thumb) if ok_v else False
