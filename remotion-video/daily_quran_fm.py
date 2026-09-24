@@ -44,14 +44,14 @@ RECITER = _os.environ.get("QURAN_RECITER", "Yasser_Ad-Dussary_128kbps")
 RECITER_NAME = _os.environ.get("QURAN_RECITER_NAME", "Yasser Al-Dosari")
 
 # Quick-config for the multilingual 12-Shorts/day push:
-#   • each video targets ~42–45s of tilaawah → lands well under the 60s cap
+#   • each video targets ~32–36s of tilaawah → the viral sweet spot (<40s)
 #   • 3 Arabic (AR) + 1 Persian (FA) + 2 English (EN) + 2 Kurdish (KU)
 #     + 2 Chinese (ZH) + 2 Hindi (HI) every day
 #   • every language publishes at ITS region primetime (SLOT_LANG below)
 VIDEOS_PER_DAY = 12
-TARGET_BLOCK_SEC = 38          # aim for ~38s of tilaawah per video
-BLOCK_MAX_SEC   = 42           # hard-ish cap per block (total lands < 50s)
-MAX_AYAH_PER_VIDEO = 14         # many short ayahs may be needed to hit ~38s
+TARGET_BLOCK_SEC = 33          # aim for ~33s of tilaawah per video (viral <40s)
+BLOCK_MAX_SEC   = 36           # hard-ish cap per block (total lands < 42s)
+MAX_AYAH_PER_VIDEO = 14         # many short ayahs may be needed to hit ~33s
 
 # Language → regional-prime slots (UTC). 12 videos/day:
 #   ZH (China UTC+8): 20:00–21:00 CST = 12:00–13:00 UTC
@@ -457,7 +457,7 @@ def _block_from_seed(code: str, max_sec: float = BLOCK_MAX_SEC) -> list:
     while k < len(FLAT) and len(block) < MAX_AYAH_PER_VIDEO:
         f = FLAT[k]
         d = _real_dur(f["code"])
-        if d > 45.0:            # whole ayah longer than one Shorts clip -> skip
+        if d > 36.0:            # whole ayah too long for a <40s Short -> skip
             k += 1
             continue
         if block and total + d > max_sec:
@@ -475,7 +475,7 @@ def _block_from_idx(start_k: int, max_sec: float = BLOCK_MAX_SEC,
     while k < len(FLAT) and len(block) < max_ayah:
         f = FLAT[k]
         d = _real_dur(f["code"])
-        if d > 45.0:
+        if d > 36.0:
             k += 1
             continue
         if block and total + d > max_sec:
@@ -657,12 +657,12 @@ HOOK_POOL_HI = [
     "थके दिल के लिए सुकून 🌙",
 ]
 
-AR_TAGS = "#القرآن_الكريم #quran #اكسبلور #الرحمن #القران #تلاوة #وَقَالَ_رَبُّكُم #quranrecitation #اللهم_صل_وسلم_على_نبينا_محمد #عبدالرحمن_عبدالصمد"
-FA_TAGS = "#قرآن #تلاوت_قرآن #آیه_آرامش #یاسر_الدوسری #آرامش_قلب"
-EN_TAGS = "#quran #quranrecitation #sleep #islam #calm #dua #quranforsleep #muslim #relax #peace"
-KU_TAGS = "#قورئان #quran #ئارامی #خۆڕاستی #dua #islam #کوردی"
-ZH_TAGS = "#古兰经 #古蘭經 #quran #tilaawah #islam #sleep #القران  #quranrecitation"
-HI_TAGS = "#क़ुरआन #कुरान #quran #tilaawah #islam #sukoon #quranrecitation"
+AR_TAGS = "#القرآن_الكريم #quran #اكسبلور #الرحمن #القران #تلاوة #quranrecitation #whatsappstatus #islamicstatus #ياسر_الدوسري"
+FA_TAGS = "#قرآن #تلاوت_قرآن #آیه_آرامش #یاسر_الدوسری #آرامش_قلب #whatsappstatus #islamicstatus"
+EN_TAGS = "#quran #quranrecitation #sleep #islam #calm #dua #quranforsleep #whatsappstatus #islamicstatus #yaseraldossary"
+KU_TAGS = "#قورئان #quran #ئارامی #خۆڕاستی #dua #islam #کوردی #whatsappstatus #islamicstatus"
+ZH_TAGS = "#古兰经 #古蘭經 #quran #tilaawah #islam #sleep #quranrecitation #whatsappstatus #islamicstatus"
+HI_TAGS = "#क़ुरआन #कुरान #quran #tilaawah #islam #sukoon #quranrecitation #whatsappstatus #islamicstatus"
 KURDISH_SUFFIX = " · کوردی"
 
 def _pick_hook(lang: str, code: str) -> str:
@@ -1016,7 +1016,7 @@ def make_custom_bg_video(bg_image: str, yt=None, publish_day: str | None = None)
     pairs = list(pending["slots"])
     items = [make_item(e) for _, e in pairs]
     durations = [DUR_CACHE.get(e["code"], 5.0) for _, e in pairs]
-    while durations and (98 + sum(max(10, round(d * 30)) for d in durations)) / 30 >= 50:
+    while durations and (98 + sum(max(10, round(d * 30)) for d in durations)) / 30 >= 41:
         durations.pop(); items.pop(); pairs.pop()
     codes = [e["code"] for _, e in pairs]
 
@@ -1221,8 +1221,8 @@ def main():
         # every video is a block of consecutive ayahs
         items = [make_item(e) for _, e in pairs]
         durations = [DUR_CACHE.get(e["code"], 5.0) for _, e in pairs]
-        # hard cap: never exceed 50s total (NatureDaily overhead ≈ 3.3s + 0.4s/ayah)
-        while durations and (98 + sum(max(10, round(d * 30)) for d in durations)) / 30 >= 50:
+        # hard cap: never exceed 41s total (viral sweet spot <40s + overhead)
+        while durations and (98 + sum(max(10, round(d * 30)) for d in durations)) / 30 >= 41:
             durations.pop()
             items.pop()
             pairs.pop()

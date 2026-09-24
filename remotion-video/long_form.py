@@ -9,6 +9,9 @@ import json, random, subprocess, sys, time
 from datetime import date, datetime, timezone
 from pathlib import Path
 
+sys.path.insert(0, str(ROOT))
+from youtube_optimizer import make_seo_title, make_seo_tags, make_seo_desc
+
 ROOT = Path(__file__).resolve().parent
 SEG_DIR = ROOT / "public" / "tilawat"
 BG_PATH = ROOT / "public" / "backgrounds" / "bg8_moon.jpg"
@@ -92,28 +95,6 @@ def build_long_video() -> Path | None:
     print(f"[long] Video ready: {video_out.name}", flush=True)
     return video_out
 
-def make_title(lang: str) -> str:
-    titles = {
-        "ar":   "تلاوة القرآن الكامل | تلاوة هادئة للصيام والاستراحة",
-        "fa":   "تلاوت کامل قرآن | تلاوت آرامش بخش برای خواب و تمرکز",
-        "en":   "Complete Quran Recitation | Peaceful Long Tilaawah for Sleep",
-        "ku":   "Quranê bi Zimanê Kurdî | Tîlavên Baran ji bo Xewnê",
-        "zh":   "古兰经全文诵读 | 宁静古兰经朗诵助眠",
-        "hi":   "पूरा कुरआन तिलावात | नींद और ध्यान के लिए शांत तिलावात",
-    }
-    return titles.get(lang, titles["en"])
-
-def make_desc(lang: str, vid_id: str) -> str:
-    cta = ("\n\n🔔 اشتراك في قناة آية آرامش ليصلك كل يوم تلاوة جديدة!\n"
-           "https://youtube.com/@ayearamash")
-    tags_block = ("#quran #quranrecitation #tilaawah #sleep #quranforsleep "
-                  "#islam #calm #dua #meditation #peace")
-    meta = (f"\n\nVideo ID: {vid_id}\n"
-            f"Recited by Yasser Ad-Dussary (128kbps)\n"
-            f"Duration: ~60 minutes\n"
-            f"Category: Quran Recitation / Sleep Aid\n")
-    return f"{make_title(lang)}\n\n{cta}\n{tags_block}{meta}"
-
 def main():
     today = date.today().isoformat()
     print(f"[long] Building long-form video for {today}", flush=True)
@@ -137,16 +118,14 @@ def main():
     except Exception:
         pass
 
-    title = make_title(lang)
-    desc = make_desc(lang, "")
-    tags = ["quran", "quranrecitation", "tilaawah", "sleep", "quranforsleep",
-            "islam", "calm", "dua", "meditation", "peace"]
+    title = make_seo_title(lang, "Quran", 0, "")
+    desc = make_seo_desc(lang, make_title(lang), "Quran")
+    tags = make_seo_tags(lang)
 
     yt = auth(str(TOKEN))
     vid = upload(yt, video, BG_PATH, title, desc, tags=tags,
                  privacy="public", category_id=27, skip_orphans=True)
     if vid:
-        # Patch description with real vid_id
         print(f"[long] Uploaded: https://youtu.be/{vid}", flush=True)
 
 if __name__ == "__main__":

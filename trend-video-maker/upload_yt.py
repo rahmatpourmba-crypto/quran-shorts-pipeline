@@ -122,3 +122,89 @@ def upload(yt, video, thumb, title, desc, tags=None, privacy="public",
         except Exception:
             pass
     return vid
+
+
+# === YouTube Channel Optimizations (SEO + Engagement) ===
+
+def create_or_get_playlist(yt, title, description="", privacy="private"):
+    """Find existing playlist by title, or create one. Returns playlist_id."""
+    import time
+    r = yt.playlists().list(part="snippet,contentDetails", mine=True, maxResults=25).execute()
+    for item in r.get("items", []):
+        if item["snippet"]["title"] == title:
+            print(f"  playlist exists: {title} -> {item['id']}", flush=True)
+            return item["id"]
+    body = {"snippet": {"title": title, "description": description},
+            "status": {"privacyStatus": privacy}}
+    resp = yt.playlists().insert(part="snippet,status", body=body).execute()
+    pid = resp["id"]
+    print(f"  playlist created: {title} -> {pid}", flush=True)
+    time.sleep(0.5)
+    return pid
+
+
+def add_to_playlist(yt, playlist_id, video_id):
+    """Add a video to a playlist. Idempotent."""
+    import time
+    try:
+        r = yt.playlistItems().list(part="snippet", playlistId=playlist_id,
+                                     maxResults=50).execute()
+        for item in r.get("items", []):
+            if item["snippet"]["resourceId"]["videoId"] == video_id:
+                return  # already in playlist
+        yt.playlistItems().insert(
+            part="snippet",
+            body={"snippet": {"playlistId": playlist_id,
+                              "resourceId": {"kind": "youtube#video",
+                                             "videoId": video_id}}}).execute()
+        print(f"  added to playlist {playlist_id[:16]}: {video_id}", flush=True)
+        time.sleep(0.3)
+    except Exception as e:
+        print(f"  playlist add failed: {e}", flush=True)
+
+
+def post_pinned_comment(yt, video_id, text):
+    """Post a pinned comment on a video."""
+    import time
+    try:
+        body = {"snippet": {"videoId": video_id,
+                            "topLevelComment": {"snippet": {"textOriginal": text}}},
+                "regionCode": "US"}
+        resp = yt.commentThreads().insert(
+            part="snippet", body=body).execute()
+        cid = resp["id"]
+        # Pin it
+        yt.commentThreads().update(
+            part="snippet",
+            body={"id": cid,
+                  "snippet": {"topLevelComment": {"snippet": {"textOriginal": text,
+                                                              "authorDisplayName": ""}}}}).execute()
+        print(f"  pinned comment on {video_id[:11]}", flush=True)
+        time.sleep(0.3)
+    except Exception as e:
+        print(f"  comment failed: {e}", flush=True)
+
+
+def update_channel_metadata(yt, description, keywords=""):
+    """Update channel branding description and keywords."""
+    try:
+        r = yt.channels().list(part="brandingSettings", mine=True).execute()
+        if not r.get("items"):
+            return
+        settings = r["items"][0].get("brandingSettings", {})
+        current_desc = settings.get("channel", {}).get("description", "")
+        current_keywords = settings.get("channel", {}).get("keywords", "")
+        if current_desc != description or current_keywords != keywords:
+            yt.channels().update(
+                part="brandingSettings",
+                body={"brandingSettings": {
+                    "channel": {"description": description, "keywords": keywords}}}).execute()
+            print(f"  channel metadata updated (keywords: {keywords[:30]}...)", flush=True)
+    except Exception as e:
+        print(f"  channel metadata update skipped: {e}", flush=True)
+
+
+def get_uploads_playlist_id(yt):
+    """Return the special 'uploads' playlist ID for the channel."""
+    r = yt.channels().list(part="contentDetails", mine=True).execute()
+    return r["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]
