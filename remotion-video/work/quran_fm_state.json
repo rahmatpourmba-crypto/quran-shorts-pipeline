@@ -1,6 +1,6 @@
 {
-  "short_cursor": 53,
-  "viral_cursor": 14,
+  "short_cursor": 65,
+  "viral_cursor": 0,
   "short_surah_cursor": 3,
   "done": [
     "002001",
@@ -1798,6 +1798,572 @@
         "kind": "short",
         "hook": "الأَنۡعَامِ",
         "total_sec": 39.442750000000004,
+        "lang": "en"
+      }
+    ],
+    "2026-09-24": [
+      {
+        "slots": [
+          [
+            958,
+            {
+              "code": "007005",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 5
+            }
+          ],
+          [
+            959,
+            {
+              "code": "007006",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 6
+            }
+          ],
+          [
+            960,
+            {
+              "code": "007007",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 7
+            }
+          ]
+        ],
+        "slot": [
+          12,
+          0
+        ],
+        "kind": "short",
+        "hook": "الأَعۡرَافِ",
+        "total_sec": 37.9276875,
+        "lang": "zh"
+      },
+      {
+        "slots": [
+          [
+            965,
+            {
+              "code": "007012",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 12
+            }
+          ],
+          [
+            966,
+            {
+              "code": "007013",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 13
+            }
+          ],
+          [
+            967,
+            {
+              "code": "007014",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 14
+            }
+          ],
+          [
+            968,
+            {
+              "code": "007015",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 15
+            }
+          ]
+        ],
+        "slot": [
+          12,
+          30
+        ],
+        "kind": "short",
+        "hook": "الأَعۡرَافِ",
+        "total_sec": 36.5511875,
+        "lang": "zh"
+      },
+      {
+        "slots": [
+          [
+            976,
+            {
+              "code": "007023",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 23
+            }
+          ],
+          [
+            977,
+            {
+              "code": "007024",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 24
+            }
+          ],
+          [
+            978,
+            {
+              "code": "007025",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 25
+            }
+          ]
+        ],
+        "slot": [
+          14,
+          30
+        ],
+        "kind": "short",
+        "hook": "الأَعۡرَافِ",
+        "total_sec": 35.7073125,
+        "lang": "hi"
+      },
+      {
+        "slots": [
+          [
+            1012,
+            {
+              "code": "007059",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 59
+            }
+          ],
+          [
+            1013,
+            {
+              "code": "007060",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 60
+            }
+          ],
+          [
+            1014,
+            {
+              "code": "007061",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 61
+            }
+          ]
+        ],
+        "slot": [
+          15,
+          0
+        ],
+        "kind": "short",
+        "hook": "الأَعۡرَافِ",
+        "total_sec": 39.495,
+        "lang": "hi"
+      },
+      {
+        "slots": [
+          [
+            1019,
+            {
+              "code": "007066",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 66
+            }
+          ],
+          [
+            1020,
+            {
+              "code": "007067",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 67
+            }
+          ],
+          [
+            1021,
+            {
+              "code": "007068",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 68
+            }
+          ]
+        ],
+        "slot": [
+          16,
+          0
+        ],
+        "kind": "short",
+        "hook": "الأَعۡرَافِ",
+        "total_sec": 37.144,
+        "lang": "en"
+      },
+      {
+        "slots": [
+          [
+            1043,
+            {
+              "code": "007090",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 90
+            }
+          ],
+          [
+            1044,
+            {
+              "code": "007091",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 91
+            }
+          ],
+          [
+            1045,
+            {
+              "code": "007092",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 92
+            }
+          ]
+        ],
+        "slot": [
+          16,
+          30
+        ],
+        "kind": "short",
+        "hook": "الأَعۡرَافِ",
+        "total_sec": 32.7031875,
+        "lang": "ar"
+      },
+      {
+        "slots": [
+          [
+            1057,
+            {
+              "code": "007104",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 104
+            }
+          ],
+          [
+            1058,
+            {
+              "code": "007105",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 105
+            }
+          ],
+          [
+            1059,
+            {
+              "code": "007106",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 106
+            }
+          ]
+        ],
+        "slot": [
+          17,
+          0
+        ],
+        "kind": "short",
+        "hook": "الأَعۡرَافِ",
+        "total_sec": 37.039500000000004,
+        "lang": "fa"
+      },
+      {
+        "slots": [
+          [
+            1060,
+            {
+              "code": "007107",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 107
+            }
+          ],
+          [
+            1061,
+            {
+              "code": "007108",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 108
+            }
+          ],
+          [
+            1062,
+            {
+              "code": "007109",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 109
+            }
+          ],
+          [
+            1063,
+            {
+              "code": "007110",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 110
+            }
+          ],
+          [
+            1064,
+            {
+              "code": "007111",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 111
+            }
+          ]
+        ],
+        "slot": [
+          17,
+          30
+        ],
+        "kind": "short",
+        "hook": "الأَعۡرَافِ",
+        "total_sec": 38.4165625,
+        "lang": "ar"
+      },
+      {
+        "slots": [
+          [
+            1065,
+            {
+              "code": "007112",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 112
+            }
+          ],
+          [
+            1066,
+            {
+              "code": "007113",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 113
+            }
+          ],
+          [
+            1067,
+            {
+              "code": "007114",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 114
+            }
+          ],
+          [
+            1068,
+            {
+              "code": "007115",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 115
+            }
+          ]
+        ],
+        "slot": [
+          18,
+          0
+        ],
+        "kind": "short",
+        "hook": "الأَعۡرَافِ",
+        "total_sec": 33.651624999999996,
+        "lang": "ku"
+      },
+      {
+        "slots": [
+          [
+            1071,
+            {
+              "code": "007118",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 118
+            }
+          ],
+          [
+            1072,
+            {
+              "code": "007119",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 119
+            }
+          ],
+          [
+            1073,
+            {
+              "code": "007120",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 120
+            }
+          ],
+          [
+            1074,
+            {
+              "code": "007121",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 121
+            }
+          ],
+          [
+            1075,
+            {
+              "code": "007122",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 122
+            }
+          ]
+        ],
+        "slot": [
+          18,
+          30
+        ],
+        "kind": "short",
+        "hook": "الأَعۡرَافِ",
+        "total_sec": 22.92325,
+        "lang": "ar"
+      },
+      {
+        "slots": [
+          [
+            1133,
+            {
+              "code": "007180",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 180
+            }
+          ],
+          [
+            1134,
+            {
+              "code": "007181",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 181
+            }
+          ],
+          [
+            1135,
+            {
+              "code": "007182",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 182
+            }
+          ]
+        ],
+        "slot": [
+          19,
+          0
+        ],
+        "kind": "short",
+        "hook": "الأَعۡرَافِ",
+        "total_sec": 39.8606875,
+        "lang": "ku"
+      },
+      {
+        "slots": [
+          [
+            1136,
+            {
+              "code": "007183",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 183
+            }
+          ],
+          [
+            1137,
+            {
+              "code": "007184",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 184
+            }
+          ],
+          [
+            1138,
+            {
+              "code": "007185",
+              "surah": 7,
+              "surah_name": "الأَعۡرَافِ",
+              "surah_en": "Al-A'raaf",
+              "ayah_num": 185
+            }
+          ]
+        ],
+        "slot": [
+          19,
+          30
+        ],
+        "kind": "short",
+        "hook": "الأَعۡرَافِ",
+        "total_sec": 41.7676875,
         "lang": "en"
       }
     ]
