@@ -123,8 +123,14 @@ def main():
     tags = make_seo_tags(lang)
 
     yt = auth(str(TOKEN))
-    vid = upload(yt, video, BG_PATH, title, desc, tags=tags,
-                 privacy="public", category_id=27, skip_orphans=True)
+    try:
+        vid = upload(yt, video, BG_PATH, title, desc, tags=tags,
+                     privacy="public", category_id=27, skip_orphans=True)
+    except Exception as e:
+        if "quota" in str(e).lower() or "429" in str(e) or "Uploads per day" in str(e):
+            print("[long] DAILY UPLOAD QUOTA — long-form skipped (shorts already done)", flush=True)
+            return
+        raise
     if vid:
         print(f"[long] Uploaded: https://youtu.be/{vid}", flush=True)
 

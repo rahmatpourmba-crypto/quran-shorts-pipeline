@@ -10,13 +10,13 @@ on:
   workflow_dispatch:
     inputs:
       count:
-        description: 'Videos to produce (12 = 3AR+1FA+2EN+2KU+2ZH+2HI)'
+        description: 'Videos to produce (10 = 3AR+1FA+2EN+2KU+1ZH+1HI)'
         required: true
-        default: '12'
+        default: '10'
         type: choice
         options:
+          - '10'
           - '12'
-          - '9'
           - '6'
           - '3'
           - '1'
@@ -88,12 +88,12 @@ jobs:
         working-directory: remotion-video
         run: |
           $count = '${{ github.event.inputs.count }}'
-          if ($count -eq '') { $count = '12' }
+          if ($count -eq '') { $count = '10' }
           $now = '${{ github.event.inputs.now }}'
           if ($now -eq 'true') { $now = '--now' } else { $now = '' }
           python -u daily_quran_fm.py --count $count $now
 
       - name: Generate long-form video (60 min)
-        if: github.event.inputs.count == '12'
+        if: github.event.inputs.count == '' || github.event.inputs.count == '10' || github.event.inputs.count == '12'
         working-directory: remotion-video
         run: python -u long_form.py

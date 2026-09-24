@@ -43,12 +43,14 @@ import os as _os
 RECITER = _os.environ.get("QURAN_RECITER", "Yasser_Ad-Dussary_128kbps")
 RECITER_NAME = _os.environ.get("QURAN_RECITER_NAME", "Yasser Al-Dosari")
 
-# Quick-config for the multilingual 12-Shorts/day push:
+# Quick-config for the multilingual daily push:
 #   • each video targets ~32–36s of tilaawah → the viral sweet spot (<40s)
-#   • 3 Arabic (AR) + 1 Persian (FA) + 2 English (EN) + 2 Kurdish (KU)
-#     + 2 Chinese (ZH) + 2 Hindi (HI) every day
+#   • 10 Shorts + 1 long-form/day = 11 API uploads, safely under YouTube's
+#     ~13 'Video Uploads per day' quota so cron never hits a 429 wall
+#   • language slots: 3 Arabic (AR) + 1 Persian (FA) + 2 English (EN)
+#     + 2 Kurdish (KU) + 1 Chinese (ZH) + 1 Hindi (HI) every day
 #   • every language publishes at ITS region primetime (SLOT_LANG below)
-VIDEOS_PER_DAY = 12
+VIDEOS_PER_DAY = 10
 TARGET_BLOCK_SEC = 33          # aim for ~33s of tilaawah per video (viral <40s)
 BLOCK_MAX_SEC   = 36           # hard-ish cap per block (total lands < 42s)
 MAX_AYAH_PER_VIDEO = 14         # many short ayahs may be needed to hit ~33s
@@ -974,6 +976,9 @@ def upload_video(yt, video: Path, thumb: Path, title: str, desc: str, tags: list
             return vid
         except Exception as e:
             err = repr(e)
+            if "quota" in err.lower() or "429" in err or "Uploads per day" in err:
+                print(f"  DAILY UPLOAD QUOTA HIT — stopping for today", flush=True)
+                return "QUOTA"
             conn = isinstance(e, (ConnectionError, OSError)) or "connect" in err.lower()
             print(f"  upload retry {attempt+1}: {err} (wait {20+attempt*10}s)", flush=True)
             if attempt > 5 and not conn:
@@ -1292,6 +1297,11 @@ def main():
                 pass
         print(f"  uploading... (publish={publish})", flush=True)
         vid = upload_video(yt, video, thumb, title, desc, tags, publish)
+        if vid == "QUOTA":
+            results.append((slot, ref, "quota-hit"))
+            save_state(state)
+            print("  DAILY QUOTA REACHED — remaining slots stay for next day", flush=True)
+            break
         if vid:
             marker.write_text("ok", encoding="utf-8")
             # mark individual codes done (tracks Quran progress)

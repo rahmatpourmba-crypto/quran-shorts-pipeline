@@ -108,8 +108,12 @@ def upload(yt, video, thumb, title, desc, tags=None, privacy="public",
                 print(f"  upload {int(status.progress() * 100)}%", flush=True)
                 attempt = 0
         except Exception as e:
+            msg = str(e)
+            if "quota" in msg.lower() or "429" in msg or "Uploads per day" in msg:
+                print(f"  QUOTA EXCEEDED (daily upload cap): {type(e).__name__} {msg[:120]}", flush=True)
+                raise
             attempt += 1
-            print(f"  upload err {attempt}: {type(e).__name__} {str(e)[:130]} "
+            print(f"  upload err {attempt}: {type(e).__name__} {msg[:130]} "
                   f"(wait {min(30 * attempt, 300)}s)", flush=True)
             time.sleep(min(30 * attempt, 300))
     vid = response.get("id")
