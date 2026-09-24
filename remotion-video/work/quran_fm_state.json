@@ -282,7 +282,9 @@
     "007122",
     "007180",
     "007181",
-    "007182"
+    "007182",
+    "007183",
+    "007184"
   ],
   "plans": {
     "2026-09-12": [
@@ -1862,16 +1864,6 @@
               "surah_en": "Al-A'raaf",
               "ayah_num": 6
             }
-          ],
-          [
-            960,
-            {
-              "code": "007007",
-              "surah": 7,
-              "surah_name": "الأَعۡرَافِ",
-              "surah_en": "Al-A'raaf",
-              "ayah_num": 7
-            }
           ]
         ],
         "slot": [
@@ -1997,16 +1989,6 @@
               "surah_name": "الأَعۡرَافِ",
               "surah_en": "Al-A'raaf",
               "ayah_num": 60
-            }
-          ],
-          [
-            1014,
-            {
-              "code": "007061",
-              "surah": 7,
-              "surah_name": "الأَعۡرَافِ",
-              "surah_en": "Al-A'raaf",
-              "ayah_num": 61
             }
           ]
         ],
@@ -2186,16 +2168,6 @@
               "surah_en": "Al-A'raaf",
               "ayah_num": 110
             }
-          ],
-          [
-            1064,
-            {
-              "code": "007111",
-              "surah": 7,
-              "surah_name": "الأَعۡرَافِ",
-              "surah_en": "Al-A'raaf",
-              "ayah_num": 111
-            }
           ]
         ],
         "slot": [
@@ -2342,16 +2314,6 @@
               "surah_en": "Al-A'raaf",
               "ayah_num": 181
             }
-          ],
-          [
-            1135,
-            {
-              "code": "007182",
-              "surah": 7,
-              "surah_name": "الأَعۡرَافِ",
-              "surah_en": "Al-A'raaf",
-              "ayah_num": 182
-            }
           ]
         ],
         "slot": [
@@ -2383,16 +2345,6 @@
               "surah_name": "الأَعۡرَافِ",
               "surah_en": "Al-A'raaf",
               "ayah_num": 184
-            }
-          ],
-          [
-            1138,
-            {
-              "code": "007185",
-              "surah": 7,
-              "surah_name": "الأَعۡرَافِ",
-              "surah_en": "Al-A'raaf",
-              "ayah_num": 185
             }
           ]
         ],
