@@ -1,16 +1,19 @@
 name: mirror-backup
 
-# Perpetual backup: mirrors every push / nightly into a second repo
-# (the mirror target lives in MIRROR_DEST repo var, pushed with MIRROR_TOKEN).
+# Perpetual backup: mirrors every push / nightly into a second repo over SSH
+# (the mirror target lives in MIRROR_DEST repo var; auth = deploy key stored in
+# the MIRROR_SSH_KEY secret).
 # Set up (once):
 #   1. Create the target GitHub account + repo (e.g. a family member's account,
 #      or an Organization co-owned by a trusted person).
-#   2. In the TARGET repo settings, generate a Personal Access Token
-#      (classic, scope: repo) and copy it.
+#   2. In the TARGET repo:  Settings > Deploy keys > Add new
+#      paste the PUBLIC half of the deploy key (write access).
 #   3. In THIS repo:  Settings > Secrets and variables > Actions:
-#         new repository secret  MIRROR_TOKEN = <that token>
-#         new repository variable MIRROR_DEST = OWNER/REPO_NAME of the target
+#         new repository secret  MIRROR_SSH_KEY = <private half of the key>
+#         new repository variable MIRROR_DEST   = OWNER/REPO_NAME of the target
 # If those are missing this job simply skips (safe no-op).
+# The SAME deploy key works for any target repo that has it registered as a
+# write deploy-key, so a future successor account can re-point MIRROR_DEST.
 
 on:
   push:
@@ -37,16 +40,18 @@ jobs:
 
       - name: Push mirror to backup repo
         env:
-          MIRROR_TOKEN: ${{ secrets.MIRROR_TOKEN }}
+          MIRROR_SSH_KEY: ${{ secrets.MIRROR_SSH_KEY }}
           MIRROR_DEST: ${{ vars.MIRROR_DEST }}
         run: |
           set -euo pipefail
-          if [ -z "${MIRROR_TOKEN}" ] || [ -z "${MIRROR_DEST}" ]; then
-            echo "mirror-backup: MIRROR_TOKEN secret or MIRROR_DEST variable not set - skipping"
+          if [ -z "${MIRROR_SSH_KEY}" ] || [ -z "${MIRROR_DEST}" ]; then
+            echo "mirror-backup: MIRROR_SSH_KEY secret or MIRROR_DEST variable not set - skipping"
             exit 0
           fi
-          echo "MIRROR_TOKEN length: ${#MIRROR_TOKEN}"
-          git config --global --unset-all "http.https://github.com/.extraheader" || true
-          git config --global --unset-all http.extraheader || true
-          git -c credential.helper= push --mirror "https://x-access-token:${MIRROR_TOKEN}@github.com/${MIRROR_DEST}.git"
+          mkdir -p "$HOME/.ssh"
+          chmod 700 "$HOME/.ssh"
+          printf '%s\n' "${MIRROR_SSH_KEY}" > "$HOME/.ssh/id_ed25519"
+          chmod 600 "$HOME/.ssh/id_ed25519"
+          GIT_SSH_COMMAND="ssh -i $HOME/.ssh/id_ed25519 -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=$HOME/.ssh/known_hosts" \
+            git push --mirror "git@github.com:${MIRROR_DEST}.git"
           echo "mirror ok -> ${MIRROR_DEST}"
