@@ -46,5 +46,7 @@ jobs:
             exit 0
           fi
           echo "MIRROR_TOKEN length: ${#MIRROR_TOKEN}"
+          git config --global --unset-all "http.https://github.com/.extraheader" || true
+          git config --global --unset-all http.extraheader || true
           git -c credential.helper= push --mirror "https://x-access-token:${MIRROR_TOKEN}@github.com/${MIRROR_DEST}.git"
           echo "mirror ok -> ${MIRROR_DEST}"
