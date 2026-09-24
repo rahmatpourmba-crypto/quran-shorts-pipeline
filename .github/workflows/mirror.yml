@@ -1,0 +1,45 @@
+name: mirror-backup
+
+# Perpetual backup: mirrors every push / nightly into a second repo
+# (the mirror target lives in MIRROR_DEST repo var, pushed with MIRROR_TOKEN).
+# Set up (once):
+#   1. Create the target GitHub account + repo (e.g. a family member's account,
+#      or an Organization co-owned by a trusted person).
+#   2. In the TARGET repo settings, generate a Personal Access Token
+#      (classic, scope: repo) and copy it.
+#   3. In THIS repo:  Settings > Secrets and variables > Actions:
+#         new repository secret  MIRROR_TOKEN = <that token>
+#         new repository variable MIRROR_DEST = OWNER/REPO_NAME of the target
+# If those are missing this job simply skips (safe no-op).
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 1 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quran-mirror
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    if: ${{ secrets.MIRROR_TOKEN != '' && vars.MIRROR_DEST != '' }}
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push mirror to backup repo
+        env:
+          MIRROR_TOKEN: ${{ secrets.MIRROR_TOKEN }}
+          MIRROR_DEST: ${{ vars.MIRROR_DEST }}
+        run: |
+          git push --mirror "https://x-access-token:${MIRROR_TOKEN}@github.com/${MIRROR_DEST}.git"
+          echo "mirror ok -> ${MIRROR_DEST}"
