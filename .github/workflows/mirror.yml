@@ -40,9 +40,11 @@ jobs:
           MIRROR_TOKEN: ${{ secrets.MIRROR_TOKEN }}
           MIRROR_DEST: ${{ vars.MIRROR_DEST }}
         run: |
+          set -euo pipefail
           if [ -z "${MIRROR_TOKEN}" ] || [ -z "${MIRROR_DEST}" ]; then
             echo "mirror-backup: MIRROR_TOKEN secret or MIRROR_DEST variable not set - skipping"
             exit 0
           fi
-          git push --mirror "https://x-access-token:${MIRROR_TOKEN}@github.com/${MIRROR_DEST}.git"
+          echo "MIRROR_TOKEN length: ${#MIRROR_TOKEN}"
+          git -c credential.helper= push --mirror "https://x-access-token:${MIRROR_TOKEN}@github.com/${MIRROR_DEST}.git"
           echo "mirror ok -> ${MIRROR_DEST}"
