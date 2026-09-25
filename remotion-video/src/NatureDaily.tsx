@@ -170,7 +170,7 @@ const VerseSegment: React.FC<{item: Item; dur: number}> = ({item, dur}) => {
   );
 };
 
-export const NatureDaily: React.FC<{items: Item[]; durations: number[]; hook?: string; bg?: 'video' | 'image' | 'procedural'; bgImage?: string}> = ({items, durations, hook, bg = 'procedural', bgImage = ''}) => {
+export const NatureDaily: React.FC<{items: Item[]; durations: number[]; hook?: string; bg?: 'video' | 'image' | 'procedural'; bgImage?: string; customBg?: string}> = ({items, durations, hook, bg = 'procedural', bgImage = '', customBg = ''}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
 
@@ -197,7 +197,7 @@ export const NatureDaily: React.FC<{items: Item[]; durations: number[]; hook?: s
               />
             ) : (
               <OffthreadVideo
-                src={staticFile(`/backgrounds/${BGS[(i + (it.code.charCodeAt(0) || 0)) % BGS.length]}`)}
+                src={staticFile(customBg || `/backgrounds/${BGS[(i + (it.code.charCodeAt(0) || 0)) % BGS.length]}`)}
                 muted
                 style={{position: 'absolute', left: '-60%', width: '420%', height: '100%', objectFit: 'cover', filter: 'saturate(1.35) brightness(1.3) contrast(1.08)', transform: kitburns(i === 0 ? frame : Math.max(frame - starts[i], 0), ds[i], i)}}
               />
