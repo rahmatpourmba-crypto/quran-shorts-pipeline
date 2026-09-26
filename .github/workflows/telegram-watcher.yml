@@ -1,0 +1,25 @@
+name: Telegram Video Watcher
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: telegram-watcher
+  cancel-in-progress: false
+jobs:
+  watch:
+    runs-on: self-hosted
+    timeout-minutes: 60
+    env:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          clean: false
+          fetch-depth: 1
+      - name: Run telegram watcher
+        working-directory: remotion-video
+        run: python -X utf8 telegram_watcher.py
