@@ -102,13 +102,45 @@ def download(fid, dest):
     return dest, None
 
 # --- upload + post -------------------------------------------------------------
-def upload_short(final, thumb, title_base):
+def recent_upload_desc(yt, limit=15):
+    """Return {video_id: description} for the most recent uploads."""
+    import time
+    r = yt.channels().list(part="contentDetails", mine=True).execute()
+    pl = r["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]
+    ids, page = [], None
+    for _ in range(2):
+        p = yt.playlistItems().list(part="contentDetails", playlistId=pl,
+                                    maxResults=50, pageToken=page).execute()
+        ids += [i["contentDetails"]["videoId"] for i in p.get("items", [])]
+        page = p.get("nextPageToken")
+        if not page:
+            break
+        time.sleep(0.2)
+    ids = ids[:limit]
+    out = {}
+    if ids:
+        vv = yt.videos().list(part="snippet,status", id=",".join(ids)).execute()
+        for v in vv.get("items", []):
+            if v["status"].get("uploadStatus") == "processed":
+                out[v["id"]] = v["snippet"].get("description", "")
+    return out
+
+def upload_short(final, thumb, title_base, src_marker):
     sys.path.insert(0, str(ROOT.parent / 'trend-video-maker'))
     from upload_yt import auth, upload
     yt = auth(str(ROOT.parent / 'trend-video-maker' / 'token_aya.pickle'))
     title = "🎙 تلاوة قرآن | " + title_base + " — ياسر الدوسري 🌙"
     desc = ("🌙 تلاوة آيات من القرآن الكريم\n🎙 بصوت الشيخ ياسر الدوسري\n\n"
+            "src_id: " + src_marker + "\n\n"
             "#القرآن_الكريم #quran #تلاوة #yasseraldossary #Shorts #الجزائر #مصري #العراق")
+    # duplicate guard: if the same source already reached YouTube, reuse its id
+    try:
+        for vid, d in recent_upload_desc(yt).items():
+            if src_marker and f"src_id: {src_marker}" in d:
+                log("already uploaded (src_marker match), reuse " + vid)
+                return vid, None
+    except Exception:
+        pass
     try:
         vid = upload(yt, final, thumb if thumb and thumb.exists() else None, title, desc,
                      tags=['quran', 'quranrecitation', 'Shorts', 'القرآن', 'تلاوة', 'yasseraldossary'],
@@ -163,7 +195,7 @@ def main():
             thumb = OUT_DIR / (dest.stem + '_thumb.jpg')
             if not final.exists() or final.stat().st_size < 100000:
                 log("FINAL MISSING"); continue
-            vid, uerr = upload_short(final, thumb, "آیه آرامش")
+            vid, uerr = upload_short(final, thumb, "آیه آرامش", v['key'])
             if uerr:
                 log("upload error: " + uerr)
                 if 'quota' in uerr.lower() or '429' in uerr:
