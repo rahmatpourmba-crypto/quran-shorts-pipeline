@@ -1,6 +1,6 @@
 {
-  "short_cursor": 85,
-  "viral_cursor": 20,
+  "short_cursor": 97,
+  "viral_cursor": 6,
   "short_surah_cursor": 3,
   "done": [
     "002001",
@@ -2833,384 +2833,6 @@
       {
         "slots": [
           [
-            1405,
-            {
-              "code": "010042",
-              "surah": 10,
-              "surah_name": "يُونُسَ",
-              "surah_en": "Yunus",
-              "ayah_num": 42
-            }
-          ],
-          [
-            1406,
-            {
-              "code": "010043",
-              "surah": 10,
-              "surah_name": "يُونُسَ",
-              "surah_en": "Yunus",
-              "ayah_num": 43
-            }
-          ],
-          [
-            1407,
-            {
-              "code": "010044",
-              "surah": 10,
-              "surah_name": "يُونُسَ",
-              "surah_en": "Yunus",
-              "ayah_num": 44
-            }
-          ]
-        ],
-        "slot": [
-          16,
-          30
-        ],
-        "kind": "short",
-        "hook": "يُونُسَ",
-        "total_sec": 35.4199375,
-        "lang": "fa"
-      },
-      {
-        "slots": [
-          [
-            1423,
-            {
-              "code": "010060",
-              "surah": 10,
-              "surah_name": "يُونُسَ",
-              "surah_en": "Yunus",
-              "ayah_num": 60
-            }
-          ],
-          [
-            1425,
-            {
-              "code": "010062",
-              "surah": 10,
-              "surah_name": "يُونُسَ",
-              "surah_en": "Yunus",
-              "ayah_num": 62
-            }
-          ],
-          [
-            1426,
-            {
-              "code": "010063",
-              "surah": 10,
-              "surah_name": "يُونُسَ",
-              "surah_en": "Yunus",
-              "ayah_num": 63
-            }
-          ]
-        ],
-        "slot": [
-          17,
-          0
-        ],
-        "kind": "short",
-        "hook": "يُونُسَ",
-        "total_sec": 35.4460625,
-        "lang": "ar"
-      },
-      {
-        "slots": [
-          [
-            1426,
-            {
-              "code": "010063",
-              "surah": 10,
-              "surah_name": "يُونُسَ",
-              "surah_en": "Yunus",
-              "ayah_num": 63
-            }
-          ],
-          [
-            1427,
-            {
-              "code": "010064",
-              "surah": 10,
-              "surah_name": "يُونُسَ",
-              "surah_en": "Yunus",
-              "ayah_num": 64
-            }
-          ],
-          [
-            1428,
-            {
-              "code": "010065",
-              "surah": 10,
-              "surah_name": "يُونُسَ",
-              "surah_en": "Yunus",
-              "ayah_num": 65
-            }
-          ]
-        ],
-        "slot": [
-          17,
-          30
-        ],
-        "kind": "short",
-        "hook": "يُونُسَ",
-        "total_sec": 31.997875,
-        "lang": "ar"
-      },
-      {
-        "slots": [
-          [
-            1442,
-            {
-              "code": "010079",
-              "surah": 10,
-              "surah_name": "يُونُسَ",
-              "surah_en": "Yunus",
-              "ayah_num": 79
-            }
-          ],
-          [
-            1443,
-            {
-              "code": "010080",
-              "surah": 10,
-              "surah_name": "يُونُسَ",
-              "surah_en": "Yunus",
-              "ayah_num": 80
-            }
-          ],
-          [
-            1444,
-            {
-              "code": "010081",
-              "surah": 10,
-              "surah_name": "يُونُسَ",
-              "surah_en": "Yunus",
-              "ayah_num": 81
-            }
-          ]
-        ],
-        "slot": [
-          18,
-          0
-        ],
-        "kind": "short",
-        "hook": "يُونُسَ",
-        "total_sec": 35.0280625,
-        "lang": "ar"
-      },
-      {
-        "slots": [
-          [
-            1447,
-            {
-              "code": "010084",
-              "surah": 10,
-              "surah_name": "يُونُسَ",
-              "surah_en": "Yunus",
-              "ayah_num": 84
-            }
-          ],
-          [
-            1448,
-            {
-              "code": "010085",
-              "surah": 10,
-              "surah_name": "يُونُسَ",
-              "surah_en": "Yunus",
-              "ayah_num": 85
-            }
-          ],
-          [
-            1449,
-            {
-              "code": "010086",
-              "surah": 10,
-              "surah_name": "يُونُسَ",
-              "surah_en": "Yunus",
-              "ayah_num": 86
-            }
-          ]
-        ],
-        "slot": [
-          18,
-          30
-        ],
-        "kind": "short",
-        "hook": "يُونُسَ",
-        "total_sec": 33.486875,
-        "lang": "ar"
-      },
-      {
-        "slots": [
-          [
-            1567,
-            {
-              "code": "011095",
-              "surah": 11,
-              "surah_name": "هُودٍ",
-              "surah_en": "Hud",
-              "ayah_num": 95
-            }
-          ],
-          [
-            1568,
-            {
-              "code": "011096",
-              "surah": 11,
-              "surah_name": "هُودٍ",
-              "surah_en": "Hud",
-              "ayah_num": 96
-            }
-          ],
-          [
-            1569,
-            {
-              "code": "011097",
-              "surah": 11,
-              "surah_name": "هُودٍ",
-              "surah_en": "Hud",
-              "ayah_num": 97
-            }
-          ]
-        ],
-        "slot": [
-          19,
-          0
-        ],
-        "kind": "short",
-        "hook": "هُودٍ",
-        "total_sec": 31.005187499999998,
-        "lang": "ar"
-      },
-      {
-        "slots": [
-          [
-            1570,
-            {
-              "code": "011098",
-              "surah": 11,
-              "surah_name": "هُودٍ",
-              "surah_en": "Hud",
-              "ayah_num": 98
-            }
-          ],
-          [
-            1571,
-            {
-              "code": "011099",
-              "surah": 11,
-              "surah_name": "هُودٍ",
-              "surah_en": "Hud",
-              "ayah_num": 99
-            }
-          ],
-          [
-            1572,
-            {
-              "code": "011100",
-              "surah": 11,
-              "surah_name": "هُودٍ",
-              "surah_en": "Hud",
-              "ayah_num": 100
-            }
-          ]
-        ],
-        "slot": [
-          19,
-          30
-        ],
-        "kind": "short",
-        "hook": "هُودٍ",
-        "total_sec": 31.5015625,
-        "lang": "ar"
-      },
-      {
-        "slots": [
-          [
-            1576,
-            {
-              "code": "011104",
-              "surah": 11,
-              "surah_name": "هُودٍ",
-              "surah_en": "Hud",
-              "ayah_num": 104
-            }
-          ],
-          [
-            1577,
-            {
-              "code": "011105",
-              "surah": 11,
-              "surah_name": "هُودٍ",
-              "surah_en": "Hud",
-              "ayah_num": 105
-            }
-          ],
-          [
-            1578,
-            {
-              "code": "011106",
-              "surah": 11,
-              "surah_name": "هُودٍ",
-              "surah_en": "Hud",
-              "ayah_num": 106
-            }
-          ]
-        ],
-        "slot": [
-          20,
-          0
-        ],
-        "kind": "short",
-        "hook": "هُودٍ",
-        "total_sec": 35.70725,
-        "lang": "ar"
-      },
-      {
-        "slots": [
-          [
-            1653,
-            {
-              "code": "012058",
-              "surah": 12,
-              "surah_name": "يُوسُفَ",
-              "surah_en": "Yusuf",
-              "ayah_num": 58
-            }
-          ],
-          [
-            1654,
-            {
-              "code": "012059",
-              "surah": 12,
-              "surah_name": "يُوسُفَ",
-              "surah_en": "Yusuf",
-              "ayah_num": 59
-            }
-          ],
-          [
-            1655,
-            {
-              "code": "012060",
-              "surah": 12,
-              "surah_name": "يُوسُفَ",
-              "surah_en": "Yusuf",
-              "ayah_num": 60
-            }
-          ]
-        ],
-        "slot": [
-          20,
-          30
-        ],
-        "kind": "short",
-        "hook": "يُوسُفَ",
-        "total_sec": 32.7031875,
-        "lang": "ar"
-      },
-      {
-        "slots": [
-          [
             1667,
             {
               "code": "012072",
@@ -3241,10 +2863,494 @@
             }
           ]
         ],
-        "slot": null,
+        "slot": [
+          16,
+          30
+        ],
         "kind": "short",
         "hook": "يُوسُفَ",
-        "total_sec": 29.542375
+        "total_sec": 29.542375,
+        "lang": "fa"
+      },
+      {
+        "slots": [
+          [
+            1687,
+            {
+              "code": "012092",
+              "surah": 12,
+              "surah_name": "يُوسُفَ",
+              "surah_en": "Yusuf",
+              "ayah_num": 92
+            }
+          ],
+          [
+            1688,
+            {
+              "code": "012093",
+              "surah": 12,
+              "surah_name": "يُوسُفَ",
+              "surah_en": "Yusuf",
+              "ayah_num": 93
+            }
+          ],
+          [
+            1689,
+            {
+              "code": "012094",
+              "surah": 12,
+              "surah_name": "يُوسُفَ",
+              "surah_en": "Yusuf",
+              "ayah_num": 94
+            }
+          ]
+        ],
+        "slot": [
+          17,
+          0
+        ],
+        "kind": "short",
+        "hook": "يُوسُفَ",
+        "total_sec": 35.2370625,
+        "lang": "ar"
+      },
+      {
+        "slots": [
+          [
+            1697,
+            {
+              "code": "012102",
+              "surah": 12,
+              "surah_name": "يُوسُفَ",
+              "surah_en": "Yusuf",
+              "ayah_num": 102
+            }
+          ],
+          [
+            1698,
+            {
+              "code": "012103",
+              "surah": 12,
+              "surah_name": "يُوسُفَ",
+              "surah_en": "Yusuf",
+              "ayah_num": 103
+            }
+          ],
+          [
+            1699,
+            {
+              "code": "012104",
+              "surah": 12,
+              "surah_name": "يُوسُفَ",
+              "surah_en": "Yusuf",
+              "ayah_num": 104
+            }
+          ]
+        ],
+        "slot": [
+          17,
+          30
+        ],
+        "kind": "short",
+        "hook": "يُوسُفَ",
+        "total_sec": 29.751375,
+        "lang": "ar"
+      },
+      {
+        "slots": [
+          [
+            1764,
+            {
+              "code": "014015",
+              "surah": 14,
+              "surah_name": "إِبۡرَاهِيمَ",
+              "surah_en": "Ibrahim",
+              "ayah_num": 15
+            }
+          ],
+          [
+            1765,
+            {
+              "code": "014016",
+              "surah": 14,
+              "surah_name": "إِبۡرَاهِيمَ",
+              "surah_en": "Ibrahim",
+              "ayah_num": 16
+            }
+          ],
+          [
+            1766,
+            {
+              "code": "014017",
+              "surah": 14,
+              "surah_name": "إِبۡرَاهِيمَ",
+              "surah_en": "Ibrahim",
+              "ayah_num": 17
+            }
+          ]
+        ],
+        "slot": [
+          18,
+          0
+        ],
+        "kind": "short",
+        "hook": "إِبۡرَاهِيمَ",
+        "total_sec": 32.83375,
+        "lang": "ar"
+      },
+      {
+        "slots": [
+          [
+            1777,
+            {
+              "code": "014028",
+              "surah": 14,
+              "surah_name": "إِبۡرَاهِيمَ",
+              "surah_en": "Ibrahim",
+              "ayah_num": 28
+            }
+          ],
+          [
+            1778,
+            {
+              "code": "014029",
+              "surah": 14,
+              "surah_name": "إِبۡرَاهِيمَ",
+              "surah_en": "Ibrahim",
+              "ayah_num": 29
+            }
+          ],
+          [
+            1779,
+            {
+              "code": "014030",
+              "surah": 14,
+              "surah_name": "إِبۡرَاهِيمَ",
+              "surah_en": "Ibrahim",
+              "ayah_num": 30
+            }
+          ]
+        ],
+        "slot": [
+          18,
+          30
+        ],
+        "kind": "short",
+        "hook": "إِبۡرَاهِيمَ",
+        "total_sec": 32.4158125,
+        "lang": "ar"
+      },
+      {
+        "slots": [
+          [
+            1789,
+            {
+              "code": "014040",
+              "surah": 14,
+              "surah_name": "إِبۡرَاهِيمَ",
+              "surah_en": "Ibrahim",
+              "ayah_num": 40
+            }
+          ],
+          [
+            1790,
+            {
+              "code": "014041",
+              "surah": 14,
+              "surah_name": "إِبۡرَاهِيمَ",
+              "surah_en": "Ibrahim",
+              "ayah_num": 41
+            }
+          ],
+          [
+            1791,
+            {
+              "code": "014042",
+              "surah": 14,
+              "surah_name": "إِبۡرَاهِيمَ",
+              "surah_en": "Ibrahim",
+              "ayah_num": 42
+            }
+          ]
+        ],
+        "slot": [
+          19,
+          0
+        ],
+        "kind": "short",
+        "hook": "إِبۡرَاهِيمَ",
+        "total_sec": 34.9758125,
+        "lang": "ar"
+      },
+      {
+        "slots": [
+          [
+            1798,
+            {
+              "code": "014049",
+              "surah": 14,
+              "surah_name": "إِبۡرَاهِيمَ",
+              "surah_en": "Ibrahim",
+              "ayah_num": 49
+            }
+          ],
+          [
+            1799,
+            {
+              "code": "014050",
+              "surah": 14,
+              "surah_name": "إِبۡرَاهِيمَ",
+              "surah_en": "Ibrahim",
+              "ayah_num": 50
+            }
+          ],
+          [
+            1800,
+            {
+              "code": "014051",
+              "surah": 14,
+              "surah_name": "إِبۡرَاهِيمَ",
+              "surah_en": "Ibrahim",
+              "ayah_num": 51
+            }
+          ]
+        ],
+        "slot": [
+          19,
+          30
+        ],
+        "kind": "short",
+        "hook": "إِبۡرَاهِيمَ",
+        "total_sec": 33.068875,
+        "lang": "ar"
+      },
+      {
+        "slots": [
+          [
+            1802,
+            {
+              "code": "015001",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 1
+            }
+          ],
+          [
+            1803,
+            {
+              "code": "015002",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 2
+            }
+          ],
+          [
+            1804,
+            {
+              "code": "015003",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 3
+            }
+          ]
+        ],
+        "slot": [
+          20,
+          0
+        ],
+        "kind": "short",
+        "hook": "الحِجۡرِ",
+        "total_sec": 24.5529375,
+        "lang": "ar"
+      },
+      {
+        "slots": [
+          [
+            1805,
+            {
+              "code": "015004",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 4
+            }
+          ],
+          [
+            1806,
+            {
+              "code": "015005",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 5
+            }
+          ],
+          [
+            1807,
+            {
+              "code": "015006",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 6
+            }
+          ]
+        ],
+        "slot": [
+          20,
+          30
+        ],
+        "kind": "short",
+        "hook": "الحِجۡرِ",
+        "total_sec": 28.44525,
+        "lang": "ar"
+      },
+      {
+        "slots": [
+          [
+            1808,
+            {
+              "code": "015007",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 7
+            }
+          ],
+          [
+            1809,
+            {
+              "code": "015008",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 8
+            }
+          ],
+          [
+            1810,
+            {
+              "code": "015009",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 9
+            }
+          ],
+          [
+            1811,
+            {
+              "code": "015010",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 10
+            }
+          ]
+        ],
+        "slot": null,
+        "kind": "short",
+        "hook": "الحِجۡرِ",
+        "total_sec": 35.0883125
+      },
+      {
+        "slots": [
+          [
+            1812,
+            {
+              "code": "015011",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 11
+            }
+          ],
+          [
+            1813,
+            {
+              "code": "015012",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 12
+            }
+          ],
+          [
+            1814,
+            {
+              "code": "015013",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 13
+            }
+          ],
+          [
+            1815,
+            {
+              "code": "015014",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 14
+            }
+          ]
+        ],
+        "slot": null,
+        "kind": "short",
+        "hook": "الحِجۡرِ",
+        "total_sec": 28.8711875
+      },
+      {
+        "slots": [
+          [
+            1816,
+            {
+              "code": "015015",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 15
+            }
+          ],
+          [
+            1817,
+            {
+              "code": "015016",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 16
+            }
+          ],
+          [
+            1818,
+            {
+              "code": "015017",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 17
+            }
+          ],
+          [
+            1819,
+            {
+              "code": "015018",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 18
+            }
+          ]
+        ],
+        "slot": null,
+        "kind": "short",
+        "hook": "الحِجۡرِ",
+        "total_sec": 35.4279375
       }
     ]
   }
