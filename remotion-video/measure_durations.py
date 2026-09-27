@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Probe MP3 durations (cache) so the 55s block fits exactly."""
-import json, os, subprocess, sys
+import json, subprocess, sys
 from pathlib import Path
 
 if sys.stdout and hasattr(sys.stdout, "reconfigure"):
@@ -8,8 +8,7 @@ if sys.stdout and hasattr(sys.stdout, "reconfigure"):
 
 ROOT = Path(r'C:\Users\Admin\actions-runner\_work\quran-shorts-pipeline\quran-shorts-pipeline\remotion-video')
 TIL = ROOT / 'public' / 'tilawat'
-WORKROOT = Path(os.getenv('TG_WORK', str(ROOT / 'public' / 'raw_videos')))
-CACHE = WORKROOT / 'work' / 'dur_cache.json'
+CACHE = ROOT / 'work' / 'dur_cache.json'
 
 try:
     import imageio_ffmpeg

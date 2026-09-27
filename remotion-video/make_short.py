@@ -10,8 +10,7 @@ if sys.stdout and hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 ROOT = Path(r'C:\Users\Admin\actions-runner\_work\quran-shorts-pipeline\quran-shorts-pipeline\remotion-video')
-WORKROOT = Path(os.getenv('TG_WORK', str(ROOT / 'public' / 'raw_videos')))
-RAW_DIR = WORKROOT
+RAW_DIR = ROOT / 'public' / 'raw_videos'
 TILAWAT_DIR = ROOT / 'public' / 'tilawat'
 FONT = ROOT / 'public' / 'fonts' / 'Cairo.ttf'
 TOKEN = ROOT.parent / 'trend-video-maker' / 'token_aya.pickle'
@@ -51,9 +50,8 @@ def local_audio_codes():
 
 def load_durs():
     cache = {}
-    for p in [WORK() / 'dur_cache.json',
-              ROOT / 'work' / 'dur_cache.json',
-              ROOT.parent / 'trend-video-maker' / 'content' / 'quran_full' / 'duration_cache.json']:
+    for p in [ROOT/'work'/'dur_cache.json',
+              ROOT.parent/'trend-video-maker'/'content'/'quran_full'/'duration_cache.json']:
         if p.exists():
             try:
                 cache.update(json.loads(p.read_text(encoding='utf-8')))
@@ -83,24 +81,16 @@ def pick_block(docodes=None, target=TARGET, max_ayah=14):
     print(f"    block dur ~ {round(total,1)}s ({len(block)} ayahs)", flush=True)
     return block
 
-def WORK():
-    d = WORKROOT / 'work'; d.mkdir(parents=True, exist_ok=True)
-    return d
-
-def OUT_DIR():
-    d = WORKROOT / 'out'; d.mkdir(parents=True, exist_ok=True)
-    return d
-
 def concat_audio(ff, codes, out):
-    lst = WORK() / 'tilaawat_list.txt'
+    lst = ROOT/'work'/'tilaawat_list.txt'
+    lst.parent.mkdir(parents=True, exist_ok=True)
     with open(lst, 'w', encoding='utf-8') as f:
         for c in codes:
             p = TILAWAT_DIR / f'seg_{c}.mp3'
+            # mp3 concat via demuxer needs same params; use file concat
             f.write(f"file '{p.as_posix()}'\n")
-    # re-encode so varying mp3 params produce an honest duration
     subprocess.run([ff, '-y', '-f', 'concat', '-safe', '0', '-i', str(lst),
-                    '-c:a', 'libmp3lame', '-b:a', '192k', str(out)],
-                   check=True, capture_output=True, timeout=240)
+                    '-c', 'copy', str(out)], check=True, capture_output=True, timeout=120)
 
 def make_vertical(ff, src, dst):
     subprocess.run([ff, '-y', '-i', str(src), '-an',
@@ -155,96 +145,28 @@ def make_text_png(lines, out):
     print(f"text png saved: {out}", flush=True)
 
 def make_thumb(ff, video_path, out_jpg, lines):
-    """Beautiful thumbnail: smart frame + cinematic overlay + gold typography."""
-    import json
-    from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
+    """Send / thumbnail in the 55s stream (no extra remotion): extract frame + text."""
+    from PIL import Image, ImageDraw, ImageFont
     import arabic_reshaper
     from bidi.algorithm import get_display
-
-    dur = probe_dur(ff, video_path) or 55
-    frames = []
-    for frac in (0.3, 0.5, 0.7):
-        t = max(0.5, dur * frac)
-        frame = WORK() / f'thumb_raw{int(frac*100)}.jpg'
-        subprocess.run([ff, '-y', '-ss', str(round(t,1)), '-i', str(video_path),
-                        '-frames:v', '1', '-q:v', '2', str(frame)],
-                       check=True, capture_output=True, timeout=60)
-        with Image.open(frame) as im:
-            im = im.convert('RGB')
-            g = im.convert('L').resize((64,36))
-            px = list(g.getdata())
-            frames.append((sum(px)/len(px), im.copy()))
-    # prefer a bright, well-exposed frame (avoid black intros)
-    frames.sort(key=lambda f: abs(f[0]-145))
-    base = frames[0][1]
-
-    # cover-crop to 9:16
-    w, h = base.size
-    th = int(w * 16 / 9)
-    if h >= th:
-        top = (h - th) // 2
-        base = base.crop((0, top, w, top + th))
-    else:
-        tw = int(h * 9 / 16)
-        left = (w - tw) // 2
-        base = base.crop((left, 0, left + tw, h))
-    base = base.resize((1080, 1920), Image.LANCZOS)
-    img = base.convert('RGBA')
-
-    # cinematic dark gradients (top & bottom) + vignette
-    ov = Image.new('RGBA', img.size, (0,0,0,0))
-    od = ImageDraw.Draw(ov)
-    for yy in range(0, 640):
-        a = int(150 * (1 - yy/640.0) ** 1.5)
-        od.line([(0, yy), (1080, yy)], fill=(4, 7, 14, a))
-    for yy in range(1280, 1920):
-        a = int(200 * ((yy-1280)/640.0) ** 1.4)
-        od.line([(0, yy), (1080, yy)], fill=(4, 7, 14, a))
-    # thin gold top & bottom rules
-    od.rectangle([(40, 46), (1040, 50)], fill=(211, 175, 96, 255))
-    od.rectangle([(40, 1872), (1040, 1876)], fill=(211, 175, 96, 255))
-    # vignette
-    vig = Image.new('L', (1080//2, 1920//2), 0)
-    vd = ImageDraw.Draw(vig)
-    vd.ellipse([0,0,1079,1919], fill=255)
-    vig = vig.resize((1080,1920))
-    vig = vig.filter(ImageFilter.GaussianBlur(120))
-    dark = Image.new('RGBA', img.size, (0,0,0,110))
-    img = Image.composite(img, dark, vig.point(lambda p: 255 - (255-p)*36//255))
-    img = Image.alpha_composite(img, ov)
-
+    frame = ROOT/'work'/'thumb_raw.jpg'
+    subprocess.run([ff, '-y', '-ss', '6', '-i', str(video_path), '-frames:v', '1', '-q:v', '2', str(frame)],
+                    check=True, capture_output=True, timeout=60)
+    img = Image.open(frame).convert('RGB').resize((1080,1920), Image.LANCZOS)
     d = ImageDraw.Draw(img)
-    def shape(s):
-        return get_display(arabic_reshaper.reshape(s)) if s.strip() else s
-
-    # top label
-    label = shape("تلاوة قرآن — ياسر الدوسري")
-    f1 = ImageFont.truetype(str(FONT), 74)
-    b = d.textbbox((0,0), label, font=f1)
-    d.text((1080//2 - (b[2]-b[0])//2, 178), label, font=f1,
-           fill=(240, 240, 244, 255), stroke_width=4, stroke_fill=(10,12,18,255))
-
-    # surah refs (big, gold), only first 2 fit
-    y = 1400
-    for line in lines[:2]:
-        ss = shape(line)
-        if len(ss) > 40:
-            fsz = 60
-        elif len(ss) > 22:
-            fsz = 72
-        else:
-            fsz = 96
-        f = ImageFont.truetype(str(FONT), fsz)
-        b = d.textbbox((0,0), ss, font=f)
-        x = 1080//2 - (b[2]-b[0])//2
-        # glow
-        for dx, dy in ((-3,-3),(3,-3),(-3,3),(3,3),(0,-4),(0,4)):
-            d.text((x+dx, y+dy), ss, font=f, fill=(211,175,96,150))
-        d.text((x, y), ss, font=f, fill=(255, 214, 130, 255),
-               stroke_width=2, stroke_fill=(30,26,16,255))
-        y += fsz + 30
-
-    img.convert('RGB').save(str(out_jpg), quality=94)
+    for i, line in enumerate(lines[:3]):
+        try:
+            reshaped = get_display(arabic_reshaper.reshape(line))
+        except Exception:
+            reshaped = line
+        sz = 84 if len(line) < 45 else 54
+        f = ImageFont.truetype(str(FONT), sz)
+        bbox = d.textbbox((0,0), reshaped, font=f)
+        tw = bbox[2]-bbox[0]
+        yy = 1500 + i * (sz + 34)
+        d.text(((1080-tw)//2-3, yy+3), reshaped, font=f, fill=(0,0,0,200))
+        d.text(((1080-tw)//2, yy), reshaped, font=f, fill=(232,179,96,255))
+    img.save(str(out_jpg), quality=92)
     print(f"thumb saved: {out_jpg}", flush=True)
 
 def main():
@@ -255,7 +177,7 @@ def main():
     if not src.exists():
         print("src missing:", src); sys.exit(1)
     ff = get_ffmpeg()
-    work = WORK()
+    work = ROOT/'work'; work.mkdir(exist_ok=True)
 
     # concurrency guard: make sure previous render not running
     lock = work/'makingshort.lock'
@@ -299,6 +221,9 @@ def main():
     print("THUMB:", th, th.stat().st_size, flush=True)
     try: lock.unlink()
     except: pass
+
+def OUT_DIR():
+    d = ROOT/'out'; d.mkdir(exist_ok=True); return d
 
 def build_texts(block, max_secs=56):
     SEG = json.loads((ROOT/'src'/'segments.json').read_text(encoding='utf-8'))
