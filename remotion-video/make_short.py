@@ -10,10 +10,11 @@ if sys.stdout and hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 ROOT = Path(r'C:\Users\Admin\actions-runner\_work\quran-shorts-pipeline\quran-shorts-pipeline\remotion-video')
+DATA = Path(os.getenv('TG_DATA', str(ROOT)))   # assets (tilawat/fonts/segments) live with the cloned repo
 WORKROOT = Path(os.getenv('TG_WORK', str(ROOT / 'public' / 'raw_videos')))
 RAW_DIR = WORKROOT
-TILAWAT_DIR = ROOT / 'public' / 'tilawat'
-FONT = ROOT / 'public' / 'fonts' / 'Cairo.ttf'
+TILAWAT_DIR = DATA / 'public' / 'tilawat'
+FONT = DATA / 'public' / 'fonts' / 'Cairo.ttf'
 TOKEN = ROOT.parent / 'trend-video-maker' / 'token_aya.pickle'
 PY_MAKER = str(ROOT.parent / 'trend-video-maker')
 
@@ -432,7 +433,7 @@ def main():
     except: pass
 
 def build_texts(block, max_secs=56):
-    SEG = json.loads((ROOT/'src'/'segments.json').read_text(encoding='utf-8'))
+    SEG = json.loads((DATA/'src'/'segments.json').read_text(encoding='utf-8'))
     info = {}
     for seg in SEG:
         for j in range(seg['to'] - seg['from'] + 1):

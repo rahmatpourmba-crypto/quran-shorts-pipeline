@@ -127,6 +127,26 @@ def pop_thumb():
     save_json(WORK_DIR / 'pending_thumb.json', {'queue': fresh[1:]})
     return fid
 
+def peek_thumb():
+    """Peek the oldest fresh queued photo without consuming it."""
+    pt = load_json(WORK_DIR / 'pending_thumb.json', {})
+    if not isinstance(pt, dict):
+        pt = {}
+    q = pt.get('queue', [])
+    if not isinstance(q, list):
+        q = []
+    now = time.time()
+
+    def age(e):
+        return now - (e.get('ts', 0) if isinstance(e, dict) else 0)
+
+    for e in q:
+        if age(e) < THUMB_WINDOW:
+            return e['file_id'] if isinstance(e, dict) else e
+    if pt.get('file_id') and age({'ts': pt.get('ts', 0)}) < THUMB_WINDOW:
+        return pt['file_id']
+    return None
+
 # --- fetch -----------------------------------------------------------------------
 def fetch_events():
     """Return (videos, lasted_photo). Consumes getUpdates queue + updates pending thumb."""
@@ -212,10 +232,12 @@ def recent_upload_desc(yt, limit=15):
                 out[v["id"]] = v["snippet"].get("description", "")
     return out
 
+PY_MAKER = Path(os.getenv('TG_PYMAKER', str(ROOT.parent / 'trend-video-maker')))
+
 def upload_short(final, thumb, src_marker):
-    sys.path.insert(0, str(ROOT.parent / 'trend-video-maker'))
+    sys.path.insert(0, str(PY_MAKER))
     from upload_yt import auth, upload
-    yt = auth(str(ROOT.parent / 'trend-video-maker' / 'token_aya.pickle'))
+    yt = auth(str(PY_MAKER / 'token_aya.pickle'))
     if not verify_reachable(yt):
         return None, "youtube unreachable"
     title = "🎙 تلاوة قرآن | آیه آرامش — ياسر الدوسري 🌙"
@@ -254,10 +276,10 @@ def process_one(v, custom_fid=None):
     dpath, err = download(v['file_id'], dest, {'need': v.get('size', 0)})
     if err:
         log("download failed: " + err)
-        return False
+        return (False, None)
     if dest.stat().st_size < 200000:
         log("file too small, skip")
-        return False
+        return (False, None)
     cust_base = cust_thumb = None
     if custom_fid:
         cust_base = OUT_DIR / f"{dest.stem}_user.jpg"
@@ -265,11 +287,21 @@ def process_one(v, custom_fid=None):
         if cerr or not cust_base.exists() or cust_base.stat().st_size < 2000:
             log("custom photo download failed, fallback auto thumb")
             cust_base = None
-    sys.argv = ['make_short.py', str(dest)]
+    pinned = load_json(WORK_DIR / 'pinned_blocks.json', {})
+    codes = pinned.get(v['key']) if isinstance(pinned, dict) else None
+    sys.argv = ['make_short.py', str(dest)] + ([','.join(codes)] if codes else [])
     try:
         MS.main()
     except SystemExit:
         pass
+    last = load_json(MS.WORK() / 'last_block.json', None)
+    if last and isinstance(last, dict) and last.get('block'):
+        pinned = load_json(WORK_DIR / 'pinned_blocks.json', {})
+        if not isinstance(pinned, dict):
+            pinned = {}
+        if v['key'] not in pinned:                 # freeze block so re-renders & theme stay identical
+            pinned[v['key']] = last['block']
+            save_json(WORK_DIR / 'pinned_blocks.json', pinned)
     base = dest.stem
     final = OUT_DIR / f'{base}_short.mp4'
     thumb = OUT_DIR / f'{base}_thumb.jpg'
@@ -284,11 +316,12 @@ def process_one(v, custom_fid=None):
             log("custom thumb build failed: " + repr(e)[:200])
     if not final.exists() or final.stat().st_size < 100000:
         log("FINAL MISSING")
-        return False
+        return (False, None)
     vid, uerr = upload_short(final, thumb, v['key'])
     if uerr:
         log("upload error: " + uerr)
-        return 'quota' in uerr.lower() or '429' in uerr   # True => stop today
+        u = uerr.lower()
+        return ('quota' in u or '429' in u or 'exceeded' in u), None   # True => stop today
 
     ok = False
     if vid:
@@ -298,7 +331,7 @@ def process_one(v, custom_fid=None):
         log("channel post " + ("OK" if ok else "FAILED"))
     if ok:
         mark_processed(v['key'])
-    return False
+    return (False, vid)
 
 # --- main ---------------------------------------------------------------------------
 def main():
@@ -329,14 +362,16 @@ def main():
         if made >= UPLIMIT:
             log(f"daily limit {UPLIMIT} reached")
             break
-        custom_fid = pop_thumb()   # one queued user photo per video, in order
+        custom_fid = peek_thumb()   # one queued user photo per video, in order
         try:
-            stop_now = process_one(v, custom_fid)
+            stop_now, vid = process_one(v, custom_fid)
         except Exception as e:
             log("error: " + repr(e)[:250])
-            stop_now = False
+            stop_now, vid = False, None
+        if custom_fid is not None and vid:
+            pop_thumb()             # photo only consumed once its video is live
         if stop_now:
-            log("quota hit, stopping")
+            log("upload quota hit, stopping")
             break
         made += 1
     log(f"done, made {made}")
