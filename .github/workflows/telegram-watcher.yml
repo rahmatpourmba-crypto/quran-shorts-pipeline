@@ -3,6 +3,12 @@ on:
   schedule:
     - cron: '*/15 * * * *'
   workflow_dispatch:
+    inputs:
+      recover_message_ids:
+        type: string
+        required: false
+        default: ''
+        description: Comma-separated channel message ids to recover via forwardMessage
 permissions:
   contents: read
 concurrency:
@@ -15,6 +21,7 @@ jobs:
     env:
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      RECOVER_CHANNEL_MSGS: ${{ inputs.recover_message_ids || '' }}
     steps:
       - uses: actions/checkout@v4
         with:
