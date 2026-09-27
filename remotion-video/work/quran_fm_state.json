@@ -1,6 +1,6 @@
 {
-  "short_cursor": 107,
-  "viral_cursor": 16,
+  "short_cursor": 119,
+  "viral_cursor": 2,
   "short_surah_cursor": 3,
   "done": [
     "002001",
@@ -3396,288 +3396,6 @@
       {
         "slots": [
           [
-            1798,
-            {
-              "code": "014049",
-              "surah": 14,
-              "surah_name": "إِبۡرَاهِيمَ",
-              "surah_en": "Ibrahim",
-              "ayah_num": 49
-            }
-          ],
-          [
-            1799,
-            {
-              "code": "014050",
-              "surah": 14,
-              "surah_name": "إِبۡرَاهِيمَ",
-              "surah_en": "Ibrahim",
-              "ayah_num": 50
-            }
-          ],
-          [
-            1800,
-            {
-              "code": "014051",
-              "surah": 14,
-              "surah_name": "إِبۡرَاهِيمَ",
-              "surah_en": "Ibrahim",
-              "ayah_num": 51
-            }
-          ]
-        ],
-        "slot": [
-          16,
-          30
-        ],
-        "kind": "short",
-        "hook": "إِبۡرَاهِيمَ",
-        "total_sec": 33.068875,
-        "lang": "fa"
-      },
-      {
-        "slots": [
-          [
-            1802,
-            {
-              "code": "015001",
-              "surah": 15,
-              "surah_name": "الحِجۡرِ",
-              "surah_en": "Al-Hijr",
-              "ayah_num": 1
-            }
-          ],
-          [
-            1803,
-            {
-              "code": "015002",
-              "surah": 15,
-              "surah_name": "الحِجۡرِ",
-              "surah_en": "Al-Hijr",
-              "ayah_num": 2
-            }
-          ],
-          [
-            1804,
-            {
-              "code": "015003",
-              "surah": 15,
-              "surah_name": "الحِجۡرِ",
-              "surah_en": "Al-Hijr",
-              "ayah_num": 3
-            }
-          ]
-        ],
-        "slot": [
-          17,
-          0
-        ],
-        "kind": "short",
-        "hook": "الحِجۡرِ",
-        "total_sec": 24.5529375,
-        "lang": "ar"
-      },
-      {
-        "slots": [
-          [
-            1805,
-            {
-              "code": "015004",
-              "surah": 15,
-              "surah_name": "الحِجۡرِ",
-              "surah_en": "Al-Hijr",
-              "ayah_num": 4
-            }
-          ],
-          [
-            1806,
-            {
-              "code": "015005",
-              "surah": 15,
-              "surah_name": "الحِجۡرِ",
-              "surah_en": "Al-Hijr",
-              "ayah_num": 5
-            }
-          ],
-          [
-            1807,
-            {
-              "code": "015006",
-              "surah": 15,
-              "surah_name": "الحِجۡرِ",
-              "surah_en": "Al-Hijr",
-              "ayah_num": 6
-            }
-          ]
-        ],
-        "slot": [
-          17,
-          30
-        ],
-        "kind": "short",
-        "hook": "الحِجۡرِ",
-        "total_sec": 28.44525,
-        "lang": "ar"
-      },
-      {
-        "slots": [
-          [
-            1808,
-            {
-              "code": "015007",
-              "surah": 15,
-              "surah_name": "الحِجۡرِ",
-              "surah_en": "Al-Hijr",
-              "ayah_num": 7
-            }
-          ],
-          [
-            1809,
-            {
-              "code": "015008",
-              "surah": 15,
-              "surah_name": "الحِجۡرِ",
-              "surah_en": "Al-Hijr",
-              "ayah_num": 8
-            }
-          ],
-          [
-            1810,
-            {
-              "code": "015009",
-              "surah": 15,
-              "surah_name": "الحِجۡرِ",
-              "surah_en": "Al-Hijr",
-              "ayah_num": 9
-            }
-          ],
-          [
-            1811,
-            {
-              "code": "015010",
-              "surah": 15,
-              "surah_name": "الحِجۡرِ",
-              "surah_en": "Al-Hijr",
-              "ayah_num": 10
-            }
-          ]
-        ],
-        "slot": [
-          18,
-          0
-        ],
-        "kind": "short",
-        "hook": "الحِجۡرِ",
-        "total_sec": 35.0883125,
-        "lang": "ar"
-      },
-      {
-        "slots": [
-          [
-            1812,
-            {
-              "code": "015011",
-              "surah": 15,
-              "surah_name": "الحِجۡرِ",
-              "surah_en": "Al-Hijr",
-              "ayah_num": 11
-            }
-          ],
-          [
-            1813,
-            {
-              "code": "015012",
-              "surah": 15,
-              "surah_name": "الحِجۡرِ",
-              "surah_en": "Al-Hijr",
-              "ayah_num": 12
-            }
-          ],
-          [
-            1814,
-            {
-              "code": "015013",
-              "surah": 15,
-              "surah_name": "الحِجۡرِ",
-              "surah_en": "Al-Hijr",
-              "ayah_num": 13
-            }
-          ],
-          [
-            1815,
-            {
-              "code": "015014",
-              "surah": 15,
-              "surah_name": "الحِجۡرِ",
-              "surah_en": "Al-Hijr",
-              "ayah_num": 14
-            }
-          ]
-        ],
-        "slot": [
-          18,
-          30
-        ],
-        "kind": "short",
-        "hook": "الحِجۡرِ",
-        "total_sec": 28.8711875,
-        "lang": "ar"
-      },
-      {
-        "slots": [
-          [
-            1816,
-            {
-              "code": "015015",
-              "surah": 15,
-              "surah_name": "الحِجۡرِ",
-              "surah_en": "Al-Hijr",
-              "ayah_num": 15
-            }
-          ],
-          [
-            1817,
-            {
-              "code": "015016",
-              "surah": 15,
-              "surah_name": "الحِجۡرِ",
-              "surah_en": "Al-Hijr",
-              "ayah_num": 16
-            }
-          ],
-          [
-            1818,
-            {
-              "code": "015017",
-              "surah": 15,
-              "surah_name": "الحِجۡرِ",
-              "surah_en": "Al-Hijr",
-              "ayah_num": 17
-            }
-          ],
-          [
-            1819,
-            {
-              "code": "015018",
-              "surah": 15,
-              "surah_name": "الحِجۡرِ",
-              "surah_en": "Al-Hijr",
-              "ayah_num": 18
-            }
-          ]
-        ],
-        "slot": [
-          19,
-          0
-        ],
-        "kind": "short",
-        "hook": "الحِجۡرِ",
-        "total_sec": 35.4279375,
-        "lang": "ar"
-      },
-      {
-        "slots": [
-          [
             1823,
             {
               "code": "015022",
@@ -3709,13 +3427,13 @@
           ]
         ],
         "slot": [
-          19,
+          16,
           30
         ],
         "kind": "short",
         "hook": "الحِجۡرِ",
         "total_sec": 34.714625,
-        "lang": "ar"
+        "lang": "fa"
       },
       {
         "slots": [
@@ -3751,7 +3469,7 @@
           ]
         ],
         "slot": [
-          20,
+          17,
           0
         ],
         "kind": "short",
@@ -3793,7 +3511,7 @@
           ]
         ],
         "slot": [
-          20,
+          17,
           30
         ],
         "kind": "short",
@@ -3844,10 +3562,408 @@
             }
           ]
         ],
+        "slot": [
+          18,
+          0
+        ],
+        "kind": "short",
+        "hook": "الحِجۡرِ",
+        "total_sec": 32.7373125,
+        "lang": "ar"
+      },
+      {
+        "slots": [
+          [
+            1836,
+            {
+              "code": "015035",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 35
+            }
+          ],
+          [
+            1837,
+            {
+              "code": "015036",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 36
+            }
+          ],
+          [
+            1838,
+            {
+              "code": "015037",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 37
+            }
+          ],
+          [
+            1839,
+            {
+              "code": "015038",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 38
+            }
+          ]
+        ],
+        "slot": [
+          18,
+          30
+        ],
+        "kind": "short",
+        "hook": "الحِجۡرِ",
+        "total_sec": 21.73975,
+        "lang": "ar"
+      },
+      {
+        "slots": [
+          [
+            1840,
+            {
+              "code": "015039",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 39
+            }
+          ],
+          [
+            1841,
+            {
+              "code": "015040",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 40
+            }
+          ],
+          [
+            1842,
+            {
+              "code": "015041",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 41
+            }
+          ],
+          [
+            1843,
+            {
+              "code": "015042",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 42
+            }
+          ]
+        ],
+        "slot": [
+          19,
+          0
+        ],
+        "kind": "short",
+        "hook": "الحِجۡرِ",
+        "total_sec": 34.827062500000004,
+        "lang": "ar"
+      },
+      {
+        "slots": [
+          [
+            1844,
+            {
+              "code": "015043",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 43
+            }
+          ],
+          [
+            1845,
+            {
+              "code": "015044",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 44
+            }
+          ],
+          [
+            1846,
+            {
+              "code": "015045",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 45
+            }
+          ],
+          [
+            1847,
+            {
+              "code": "015046",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 46
+            }
+          ]
+        ],
+        "slot": [
+          19,
+          30
+        ],
+        "kind": "short",
+        "hook": "الحِجۡرِ",
+        "total_sec": 31.4311875,
+        "lang": "ar"
+      },
+      {
+        "slots": [
+          [
+            1848,
+            {
+              "code": "015047",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 47
+            }
+          ],
+          [
+            1849,
+            {
+              "code": "015048",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 48
+            }
+          ],
+          [
+            1850,
+            {
+              "code": "015049",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 49
+            }
+          ]
+        ],
+        "slot": [
+          20,
+          0
+        ],
+        "kind": "short",
+        "hook": "الحِجۡرِ",
+        "total_sec": 33.486875,
+        "lang": "ar"
+      },
+      {
+        "slots": [
+          [
+            1851,
+            {
+              "code": "015050",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 50
+            }
+          ],
+          [
+            1852,
+            {
+              "code": "015051",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 51
+            }
+          ],
+          [
+            1853,
+            {
+              "code": "015052",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 52
+            }
+          ],
+          [
+            1854,
+            {
+              "code": "015053",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 53
+            }
+          ]
+        ],
+        "slot": [
+          20,
+          30
+        ],
+        "kind": "short",
+        "hook": "الحِجۡرِ",
+        "total_sec": 34.4875,
+        "lang": "ar"
+      },
+      {
+        "slots": [
+          [
+            1855,
+            {
+              "code": "015054",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 54
+            }
+          ],
+          [
+            1856,
+            {
+              "code": "015055",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 55
+            }
+          ],
+          [
+            1857,
+            {
+              "code": "015056",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 56
+            }
+          ],
+          [
+            1858,
+            {
+              "code": "015057",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 57
+            }
+          ]
+        ],
         "slot": null,
         "kind": "short",
         "hook": "الحِجۡرِ",
-        "total_sec": 32.7373125
+        "total_sec": 31.091625
+      },
+      {
+        "slots": [
+          [
+            1859,
+            {
+              "code": "015058",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 58
+            }
+          ],
+          [
+            1860,
+            {
+              "code": "015059",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 59
+            }
+          ],
+          [
+            1861,
+            {
+              "code": "015060",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 60
+            }
+          ],
+          [
+            1862,
+            {
+              "code": "015061",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 61
+            }
+          ]
+        ],
+        "slot": null,
+        "kind": "short",
+        "hook": "الحِجۡرِ",
+        "total_sec": 31.927500000000002
+      },
+      {
+        "slots": [
+          [
+            1863,
+            {
+              "code": "015062",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 62
+            }
+          ],
+          [
+            1864,
+            {
+              "code": "015063",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 63
+            }
+          ],
+          [
+            1865,
+            {
+              "code": "015064",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 64
+            }
+          ],
+          [
+            1866,
+            {
+              "code": "015065",
+              "surah": 15,
+              "surah_name": "الحِجۡرِ",
+              "surah_en": "Al-Hijr",
+              "ayah_num": 65
+            }
+          ]
+        ],
+        "slot": null,
+        "kind": "short",
+        "hook": "الحِجۡرِ",
+        "total_sec": 32.8679375
       }
     ]
   }
