@@ -18,8 +18,13 @@ FONT = DATA / 'public' / 'fonts' / 'Cairo.ttf'
 TOKEN = ROOT.parent / 'trend-video-maker' / 'token_aya.pickle'
 PY_MAKER = str(ROOT.parent / 'trend-video-maker')
 
-TARGET = 55
+TARGET = 59
 RAW_DIR.mkdir(parents=True, exist_ok=True)
+
+# Famous / high-engagement ayahs (viral-start pool)
+VIRAL_POOL = ['002255', '055013', '093001', '094005', '108001', '112001',
+              '113001', '114001', '036009', '067001', '048001', '013028',
+              '057004', '002152']
 
 # Arabic theme phrase per surah (used on thumbnails / captions)
 SURAH_THEME = {
@@ -119,12 +124,20 @@ def pick_block(docodes=None, target=TARGET, max_ayah=14):
         print("no local tilaawat audio!"); sys.exit(1)
     DUR = load_durs()
     def dur(c): return float(DUR.get(c, 0) or max(3, len(c)/10))
+    pool = [c for c in VIRAL_POOL if c in codes]
     random.shuffle(codes)
     block, total, prev = [], 0.0, None
+    viral = False
+    if pool and random.random() < 0.6:
+        viral = True
+        start = random.choice(pool)
+        block.append(start); total = dur(start); prev = start
+    rest = [c for c in codes if c not in block]
+    random.shuffle(rest)
     tries = 0
     while total < target - 6 and tries < 3000:
         tries += 1
-        c = codes[random.randrange(len(codes))]
+        c = rest[random.randrange(len(rest))]
         d = dur(c)
         if c == prev or (docodes and c in docodes): continue
         if d > 30: continue
@@ -132,7 +145,7 @@ def pick_block(docodes=None, target=TARGET, max_ayah=14):
         block.append(c); total += d; prev = c
     if len(block) < 2:
         block = codes[:2]
-    print(f"    block dur ~ {round(total,1)}s ({len(block)} ayahs)", flush=True)
+    print(f"    block dur ~ {round(total,1)}s ({len(block)} ayahs){' [VIRAL]' if viral else ''}", flush=True)
     return block
 
 def WORK():
@@ -172,7 +185,7 @@ def overlay_text_and_audio(ff, video, audio, text_png, dst):
     """Combine: looped muted video + tilaawah audio + Arabic text overlay."""
     subprocess.run([ff, '-y', '-i', str(video), '-i', str(audio),
         '-i', str(text_png),
-        '-filter_complex', '[2:v]format=rgba[txt];[0:v][txt]overlay=0:1360[tv];[tv]format=yuv420p[vout];[1:a]loudnorm=I=-14:TP=-1.5:LRA=11,atrim=0:55,apad=pad_dur=1.2[aout]',
+        '-filter_complex', f'[2:v]format=rgba[txt];[0:v][txt]overlay=0:1360[tv];[tv]format=yuv420p[vout];[1:a]loudnorm=I=-14:TP=-1.5:LRA=11,atrim=0:{TARGET},apad=pad_dur=1.2[aout]',
         '-map', '[vout]', '-map', '[aout]', '-c:v', 'libx264', '-crf', '20', '-preset', 'fast',
         '-c:a', 'aac', '-b:a', '192k', '-shortest', '-movflags', '+faststart', str(dst)],
         check=True, capture_output=True, timeout=300)
@@ -275,6 +288,7 @@ def make_thumb(ff, video_path, out_jpg, lines, theme=None, ref=None):
     b = d.textbbox((0,0), label, font=f1)
     d.text((1080//2 - (b[2]-b[0])//2, 178), label, font=f1,
            fill=(240, 240, 244, 255), stroke_width=4, stroke_fill=(10,12,18,255))
+    _draw_trend_badge(d)
 
     # surah refs (big, gold), only first 2 fit
     y = 1280
@@ -362,6 +376,19 @@ def _draw_gold_line(d, text, y, gold=(255, 214, 130, 255), glow=(211, 175, 96, 1
     d.text((x, y), ss, font=f, fill=gold, stroke_width=2, stroke_fill=(30, 26, 16, 255))
     return f.size + 26
 
+def _draw_trend_badge(d, y=78):
+    """Gold pill: 'الأكثر استماعًا' — signals a trending pick."""
+    from PIL import ImageFont
+    import arabic_reshaper
+    from bidi.algorithm import get_display
+    label = get_display(arabic_reshaper.reshape("الأكثر استماعًا"))
+    f = ImageFont.truetype(str(FONT), 46)
+    bb = d.textbbox((0, 0), label, font=f)
+    w = bb[2] - bb[0]; h = bb[3] - bb[1]
+    x0 = 540 - w // 2 - 40; x1 = 540 + w // 2 + 40
+    d.rounded_rectangle([x0, y, x1, y + h + 24], radius=30, fill=(211, 175, 96, 255))
+    d.text((x0 + 40, y + 11 - bb[1]), label, font=f, fill=(18, 14, 7, 255))
+
 def make_thumb_from_photo(photo_path, out_jpg, theme_line, ref_line):
     """Turn a USER-provided photo into a beautiful 9:16 thumb with Arabic text."""
     from PIL import Image
@@ -371,6 +398,7 @@ def make_thumb_from_photo(photo_path, out_jpg, theme_line, ref_line):
         base = im.convert('RGB')
     img, d = _thumb_backdrop(base)
     _draw_top_label(d, get_display(arabic_reshaper.reshape("تلاوة قرآن — ياسر الدوسري")))
+    _draw_trend_badge(d)
     y = 1300
     y += _draw_gold_line(d, theme_line, y)
     y += _draw_gold_line(d, ref_line, y, size=64)
@@ -399,7 +427,7 @@ def main():
 
     print("1) vertical + strip audio", flush=True)
     make_vertical(ff, src, muted)
-    print("2) loop to 55s", flush=True)
+    print("2) loop to 59s", flush=True)
     loop_to(ff, muted, looped, TARGET)
 
     print("3) pick ayahs", flush=True)

@@ -21,7 +21,7 @@ if sys.stdout and hasattr(sys.stdout, "reconfigure"):
 
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "-1004354666671")
-UPLIMIT = int(os.getenv("TG_DAILY_LIMIT", "3"))
+UPLIMIT = int(os.getenv("TG_DAILY_LIMIT", "1"))
 THUMB_WINDOW = int(os.getenv("TG_THUMB_WINDOW", "2400"))   # seconds a pending thumb stays fresh
 
 ROOT = Path(__file__).resolve().parent
@@ -90,6 +90,13 @@ def mark_processed(key):
     p = get_processed(); p.add(key)
     save_json(WORK_DIR / 'processed.json', sorted(p))
 
+def get_inbox():
+    il = load_json(WORK_DIR / 'inbox.json', [])
+    return il if isinstance(il, list) else []
+
+def save_inbox(il):
+    save_json(WORK_DIR / 'inbox.json', il)
+
 def pending_thumb():
     return pop_thumb()
 
@@ -149,36 +156,44 @@ def peek_thumb():
 
 # --- fetch -----------------------------------------------------------------------
 def fetch_events():
-    """Return (videos, lasted_photo). Consumes getUpdates queue + updates pending thumb."""
+    """Consume getUpdates; append unseen videos to the durable inbox (so daily limits
+    never drop videos) and queue user photos as thumbnails. Returns count of updates."""
     off = get_offset()
     q = '/getUpdates?timeout=5&allowed_updates=message,channel_post'
     if off:
         q += f'&offset={off}'
     upd = tg(q)
-    videos, max_id, pending_photo = [], off, None
+    max_id = off
+    inbox = get_inbox()
+    keys = {v['key'] for v in inbox} | get_processed()
     for u in upd.get('result', []):
         max_id = max(max_id, u['update_id'])
         m = u.get('channel_post') or u.get('message') or {}
         ph = m.get('photo')
         if ph:
             top = ph[-1]  # largest size
-            pending_photo = top['file_id']
             push_thumb(top['file_id'])
         v = m.get('video')
         if not v:
             continue
         chat = m.get('chat', {})
-        videos.append({
-            'key': v.get('file_unique_id', '') or str(m.get('message_id')),
+        key = v.get('file_unique_id', '') or str(m.get('message_id'))
+        if key in keys:
+            continue
+        inbox.append({
+            'key': key,
             'file_id': v['file_id'],
             'msg_id': m.get('message_id'),
             'chat_id': chat.get('id'),
             'duration': v.get('duration', 0),
             'caption': m.get('caption', '') or '',
+            'attempts': 0,
         })
+        keys.add(key)
     if max_id > off:
         set_offset(max_id)
-    return videos, pending_photo
+    save_inbox(inbox)
+    return len(upd.get('result', []))
 
 def recover_message(msid):
     """Fetch an OLD channel message (already consumed from the queue) via forwardMessage."""
@@ -234,16 +249,18 @@ def recent_upload_desc(yt, limit=15):
 
 PY_MAKER = Path(os.getenv('TG_PYMAKER', str(ROOT.parent / 'trend-video-maker')))
 
-def upload_short(final, thumb, src_marker):
+def upload_short(final, thumb, src_marker, theme=None, ref=None):
     sys.path.insert(0, str(PY_MAKER))
     from upload_yt import auth, upload
     yt = auth(str(PY_MAKER / 'token_aya.pickle'))
     if not verify_reachable(yt):
         return None, "youtube unreachable"
-    title = "🎙 تلاوة قرآن | آیه آرامش — ياسر الدوسري 🌙"
-    desc = ("🌙 تلاوة آيات من القرآن الكريم\n🎙 بصوت الشيخ ياسر الدوسري\n\n"
-            "src_id: " + src_marker + "\n\n"
-            "#القرآن_الكريم #quran #تلاوة #yasseraldossary #Shorts #الجزائر #مصري #العراق")
+    t = theme or "تلاوةٌ مِنَ الْقُرآنِ الْكَريم"
+    title = f"«{t}» 🌙 تلاوة تجد فيها راحة القلب | ياسر الدوسري"
+    desc = (f"🌙 {t}\n🎙 تلاوة القرآن بصوت الشيخ ياسر الدوسري"
+            + (f"\n📖 {ref}" if ref else "")
+            + "\n\nsrc_id: " + src_marker + "\n\n"
+              "#القرآن_الكريم #quran #تلاوة #ياسر_الدوسري #trending #Shorts")
     try:
         for vid, d in recent_upload_desc(yt).items():
             if src_marker and f"src_id: {src_marker}" in d:
@@ -272,52 +289,65 @@ def post_channel(final, caption):
 # --- one video -------------------------------------------------------------------
 def process_one(v, custom_fid=None):
     log(f"processing video {v['msg_id']} ({v['duration'] or '?'}s)")
-    dest = RAW_DIR / f"tg_{v['key'][:12] or v['msg_id']}.mp4"
-    dpath, err = download(v['file_id'], dest, {'need': v.get('size', 0)})
-    if err:
-        log("download failed: " + err)
-        return (False, None)
-    if dest.stat().st_size < 200000:
-        log("file too small, skip")
-        return (False, None)
+    base = f"tg_{v['key'][:12] or v['msg_id']}"
+    dest = RAW_DIR / f"{base}.mp4"
+    final = OUT_DIR / f"{base}_short.mp4"
+    pinned = load_json(WORK_DIR / 'pinned_blocks.json', {})
+    if not isinstance(pinned, dict):
+        pinned = {}
+    codes = pinned.get(v['key'])
+    cached = bool(codes) and final.exists() and final.stat().st_size >= 100000
+    if not cached:
+        dpath, err = download(v['file_id'], dest, {'need': v.get('size', 0)})
+        if err:
+            log("download failed: " + err)
+            return (False, None)
+        if dest.stat().st_size < 200000:
+            log("file too small, skip")
+            return (False, None)
+        sys.argv = ['make_short.py', str(dest)] + ([','.join(codes)] if codes else [])
+        try:
+            MS.main()
+        except SystemExit:
+            pass
+        last = load_json(MS.WORK() / 'last_block.json', None)
+        if last and isinstance(last, dict) and last.get('block'):
+            if v['key'] not in pinned:                 # freeze block so re-renders & theme stay identical
+                pinned[v['key']] = last['block']
+                save_json(WORK_DIR / 'pinned_blocks.json', pinned)
+                codes = last['block']
     cust_base = cust_thumb = None
     if custom_fid:
-        cust_base = OUT_DIR / f"{dest.stem}_user.jpg"
+        cust_base = OUT_DIR / f"{base}_user.jpg"
         _, cerr = download(custom_fid, cust_base)
         if cerr or not cust_base.exists() or cust_base.stat().st_size < 2000:
             log("custom photo download failed, fallback auto thumb")
             cust_base = None
-    pinned = load_json(WORK_DIR / 'pinned_blocks.json', {})
-    codes = pinned.get(v['key']) if isinstance(pinned, dict) else None
-    sys.argv = ['make_short.py', str(dest)] + ([','.join(codes)] if codes else [])
-    try:
-        MS.main()
-    except SystemExit:
-        pass
-    last = load_json(MS.WORK() / 'last_block.json', None)
-    if last and isinstance(last, dict) and last.get('block'):
-        pinned = load_json(WORK_DIR / 'pinned_blocks.json', {})
-        if not isinstance(pinned, dict):
-            pinned = {}
-        if v['key'] not in pinned:                 # freeze block so re-renders & theme stay identical
-            pinned[v['key']] = last['block']
-            save_json(WORK_DIR / 'pinned_blocks.json', pinned)
-    base = dest.stem
-    final = OUT_DIR / f'{base}_short.mp4'
-    thumb = OUT_DIR / f'{base}_thumb.jpg'
+    thumb = OUT_DIR / f"{base}_thumb.jpg"
     if cust_base:
         try:
             last = load_json(MS.WORK() / 'last_block.json', None)
-            theme, ref = MS.theme_for_block(last.get('block') if last else None)
-            cust_thumb = OUT_DIR / f'{base}_custom_thumb.jpg'
+            block = (last.get('block') if last else None) or codes
+            theme, ref = MS.theme_for_block(block)
+            cust_thumb = OUT_DIR / f"{base}_custom_thumb.jpg"
             MS.make_thumb_from_photo(cust_base, cust_thumb, theme, ref)
             thumb = cust_thumb
         except Exception as e:
             log("custom thumb build failed: " + repr(e)[:200])
+    elif not thumb.exists() and final.exists():
+        try:
+            last = load_json(MS.WORK() / 'last_block.json', None)
+            block = (last.get('block') if last else None) or codes
+            ff = MS.get_ffmpeg()
+            MS.make_thumb(ff, final, thumb, MS.build_texts(block), *MS.theme_for_block(block))
+        except Exception as e:
+            log("auto thumb rebuild failed: " + repr(e)[:200])
     if not final.exists() or final.stat().st_size < 100000:
         log("FINAL MISSING")
         return (False, None)
-    vid, uerr = upload_short(final, thumb, v['key'])
+    block_for_theme = codes or (load_json(MS.WORK() / 'last_block.json', None) or {}).get('block')
+    theme, ref = MS.theme_for_block(block_for_theme)
+    vid, uerr = upload_short(final, thumb, v['key'], theme, ref)
     if uerr:
         log("upload error: " + uerr)
         u = uerr.lower()
@@ -343,24 +373,27 @@ def main():
     backlog = [recover_message(int(x)) for x in recv_ids]
     backlog = [x for x in backlog if x]
 
-    events, _ = fetch_events()
+    fetch_events()
+    inbox = get_inbox()
     videos = []
     seen = set()
-    for v in backlog + events:
+    for v in backlog + inbox:
         if v['key'] not in seen:
             seen.add(v['key'])
             videos.append(v)
 
+    videos = [v for v in videos if v['key'] not in get_processed()]
     if not videos:
         log("no new videos")
         return 0
 
     made = 0
-    for v in videos:
-        if v['key'] in get_processed():
-            continue
+    stop_early = False
+    i = 0
+    while i < len(videos):
+        v = videos[i]
         if made >= UPLIMIT:
-            log(f"daily limit {UPLIMIT} reached")
+            log(f"daily limit {UPLIMIT} reached ({len(videos) - i} remain in inbox)")
             break
         custom_fid = peek_thumb()   # one queued user photo per video, in order
         try:
@@ -370,11 +403,28 @@ def main():
             stop_now, vid = False, None
         if custom_fid is not None and vid:
             pop_thumb()             # photo only consumed once its video is live
-        if stop_now:
-            log("upload quota hit, stopping")
+        if vid:
+            # success: drop from inbox
+            saved = [x for x in videos if x['key'] != v['key']]
+            save_inbox([x for x in get_inbox() if x['key'] != v['key']])
+            videos = saved
+            made += 1
+            i += 1
+        elif stop_now:
+            log("upload quota hit, stopping (video stays queued)")
+            stop_early = True
             break
-        made += 1
-    log(f"done, made {made}")
+        else:
+            v['attempts'] = v.get('attempts', 0) + 1
+            if v['attempts'] >= 3:
+                log(f"dropping video {v['msg_id']} after 3 failed attempts")
+                saved = [x for x in videos if x['key'] != v['key']]
+                save_inbox([x for x in get_inbox() if x['key'] != v['key']])
+                videos = saved
+            else:
+                save_inbox(get_inbox())
+            i += 1
+    log(f"done, made {made}" + (" (quota stop)" if stop_early else ""))
     return 0
 
 if __name__ == '__main__':
