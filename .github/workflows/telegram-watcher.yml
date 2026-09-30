@@ -25,6 +25,9 @@ jobs:
       TG_WORK: C:\Users\Admin\tg_work
       TG_DATA: C:\Users\Admin\tg_data
       TG_PYMAKER: C:\Users\Admin\tg_code\trend-video-maker
+      TG_ENFORCE_WINDOW: '1'
+      TG_PUB_START: '18.5'
+      TG_PUB_END: '24'
     steps:
       - uses: actions/checkout@v4
         with:

@@ -242,52 +242,10 @@ def make_thumb(ff, video_path, out_jpg, lines, theme=None, ref=None):
     # prefer a bright, well-exposed frame (avoid black intros)
     frames.sort(key=lambda f: abs(f[0]-145))
     base = frames[0][1]
-
-    # cover-crop to 9:16
-    w, h = base.size
-    th = int(w * 16 / 9)
-    if h >= th:
-        top = (h - th) // 2
-        base = base.crop((0, top, w, top + th))
-    else:
-        tw = int(h * 9 / 16)
-        left = (w - tw) // 2
-        base = base.crop((left, 0, left + tw, h))
-    base = base.resize((1080, 1920), Image.LANCZOS)
-    img = base.convert('RGBA')
-
-    # cinematic dark gradients (top & bottom) + vignette
-    ov = Image.new('RGBA', img.size, (0,0,0,0))
-    od = ImageDraw.Draw(ov)
-    for yy in range(0, 640):
-        a = int(150 * (1 - yy/640.0) ** 1.5)
-        od.line([(0, yy), (1080, yy)], fill=(4, 7, 14, a))
-    for yy in range(1280, 1920):
-        a = int(200 * ((yy-1280)/640.0) ** 1.4)
-        od.line([(0, yy), (1080, yy)], fill=(4, 7, 14, a))
-    # thin gold top & bottom rules
-    od.rectangle([(40, 46), (1040, 50)], fill=(211, 175, 96, 255))
-    od.rectangle([(40, 1872), (1040, 1876)], fill=(211, 175, 96, 255))
-    # vignette
-    vig = Image.new('L', (1080//2, 1920//2), 0)
-    vd = ImageDraw.Draw(vig)
-    vd.ellipse([0,0,1079,1919], fill=255)
-    vig = vig.resize((1080,1920))
-    vig = vig.filter(ImageFilter.GaussianBlur(120))
-    dark = Image.new('RGBA', img.size, (0,0,0,110))
-    img = Image.composite(img, dark, vig.point(lambda p: 255 - (255-p)*36//255))
-    img = Image.alpha_composite(img, ov)
-
-    d = ImageDraw.Draw(img)
+    img, d = _thumb_backdrop(base)
     def shape(s):
         return get_display(arabic_reshaper.reshape(s)) if s.strip() else s
-
-    # top label
-    label = shape("تلاوة قرآن — ياسر الدوسري")
-    f1 = ImageFont.truetype(str(FONT), 74)
-    b = d.textbbox((0,0), label, font=f1)
-    d.text((1080//2 - (b[2]-b[0])//2, 178), label, font=f1,
-           fill=(240, 240, 244, 255), stroke_width=4, stroke_fill=(10,12,18,255))
+    _draw_top_label(d, shape("تلاوة قرآن — ياسر الدوسري"))
     _draw_trend_badge(d)
 
     # surah refs (big, gold), only first 2 fit
@@ -315,7 +273,7 @@ def make_thumb(ff, video_path, out_jpg, lines, theme=None, ref=None):
                stroke_width=2, stroke_fill=(30,26,16,255))
         y += fsz + 30
 
-    img.convert('RGB').save(str(out_jpg), quality=94)
+    img.convert('RGB').save(str(out_jpg), quality=96)
     print(f"thumb saved: {out_jpg}", flush=True)
 
 def _cover_crop_9x16(im):
@@ -332,49 +290,69 @@ def _cover_crop_9x16(im):
         im = im.crop((left, 0, left + tw, h))
     return im.resize((1080, 1920), Image.LANCZOS)
 
+def _enhance(im):
+    """Punch up raw imagery — richer color, more contrast, sharper edges."""
+    from PIL import ImageEnhance, ImageFilter
+    im = ImageEnhance.Color(im).enhance(1.32)
+    im = ImageEnhance.Contrast(im).enhance(1.18)
+    im = ImageEnhance.Brightness(im).enhance(1.06)
+    return im.filter(ImageFilter.UnsharpMask(radius=4, percent=170, threshold=2))
+
 def _thumb_backdrop(base_rgb):
-    """Return (img, draw) with cinematic gradients + vignette + gold rules baked in."""
+    """Return (img, draw) with enhanced base + cinematic gradients + vignette + gold rules."""
     from PIL import Image, ImageDraw, ImageFilter
-    img = _cover_crop_9x16(base_rgb).convert('RGBA')
+    img = _cover_crop_9x16(base_rgb)
+    img = _enhance(img.convert('RGB')).convert('RGBA')
     ov = Image.new('RGBA', img.size, (0, 0, 0, 0))
     od = ImageDraw.Draw(ov)
-    for yy in range(0, 640):
-        a = int(150 * (1 - yy / 640.0) ** 1.5)
+    for yy in range(0, 680):
+        a = int(180 * (1 - yy / 680.0) ** 1.5)
         od.line([(0, yy), (1080, yy)], fill=(4, 7, 14, a))
-    for yy in range(1280, 1920):
-        a = int(200 * ((yy - 1280) / 640.0) ** 1.4)
+    for yy in range(1240, 1920):
+        a = int(240 * ((yy - 1240) / 680.0) ** 1.4)
         od.line([(0, yy), (1080, yy)], fill=(4, 7, 14, a))
-    od.rectangle([(40, 46), (1040, 50)], fill=(211, 175, 96, 255))
-    od.rectangle([(40, 1872), (1040, 1876)], fill=(211, 175, 96, 255))
+    od.rectangle([(40, 46), (1040, 50)], fill=(233, 196, 106, 255))
+    od.rectangle([(40, 1872), (1040, 1876)], fill=(233, 196, 106, 255))
+    # warm golden halo behind the headline zone so text pops
+    halo = Image.new('RGBA', img.size, (0, 0, 0, 0))
+    hd = ImageDraw.Draw(halo)
+    hd.ellipse([150, 1160, 930, 1920], fill=(70, 46, 10, 70))
+    halo = halo.filter(ImageFilter.GaussianBlur(150))
+    img = Image.alpha_composite(img, halo)
     vig = Image.new('L', (1080 // 2, 1920 // 2), 0)
     vd = ImageDraw.Draw(vig)
     vd.ellipse([0, 0, 1079, 1919], fill=255)
     vig = vig.resize((1080, 1920)).filter(ImageFilter.GaussianBlur(120))
-    dark = Image.new('RGBA', img.size, (0, 0, 0, 110))
+    dark = Image.new('RGBA', img.size, (0, 0, 0, 120))
     img = Image.composite(img, dark, vig.point(lambda p: 255 - (255 - p) * 36 // 255))
     img = Image.alpha_composite(img, ov)
     return img, ImageDraw.Draw(img)
 
 def _draw_top_label(d, label):
     from PIL import ImageFont
-    d.text((1080 // 2 - d.textbbox((0, 0), label, font=ImageFont.truetype(str(FONT), 74))[2] // 2, 178),
-           label, font=ImageFont.truetype(str(FONT), 74), fill=(240, 240, 244, 255),
-           stroke_width=4, stroke_fill=(10, 12, 18, 255))
+    f = ImageFont.truetype(str(FONT), 84)
+    b = d.textbbox((0, 0), label, font=f)
+    x = 1080 // 2 - (b[2] - b[0]) // 2
+    y = 164
+    for dx, dy in ((-3, -3), (3, -3), (-3, 3), (3, 3), (0, -5), (0, 5)):
+        d.text((x + dx, y + dy), label, font=f, fill=(0, 0, 0, 210))
+    d.text((x, y), label, font=f, fill=(245, 245, 248, 255),
+           stroke_width=6, stroke_fill=(10, 12, 18, 255))
 
-def _draw_gold_line(d, text, y, gold=(255, 214, 130, 255), glow=(211, 175, 96, 150), size=None):
+def _draw_gold_line(d, text, y, gold=(255, 219, 128, 255), glow=(233, 196, 106, 170), size=None):
     from PIL import ImageFont
     from bidi.algorithm import get_display
     import arabic_reshaper
     ss = get_display(arabic_reshaper.reshape(text)) if text.strip() else text
     if size is None:
-        size = 96 if len(ss) <= 18 else (72 if len(ss) <= 34 else 54)
+        size = 112 if len(ss) <= 18 else (86 if len(ss) <= 34 else 64)
     f = ImageFont.truetype(str(FONT), size)
     b = d.textbbox((0, 0), ss, font=f)
     x = 1080 // 2 - (b[2] - b[0]) // 2
-    for dx, dy in ((-3, -3), (3, -3), (-3, 3), (3, 3), (0, -4), (0, 4)):
+    for dx, dy in ((-4, -4), (4, -4), (-4, 4), (4, 4), (0, -5), (0, 5)):
         d.text((x + dx, y + dy), ss, font=f, fill=glow)
-    d.text((x, y), ss, font=f, fill=gold, stroke_width=2, stroke_fill=(30, 26, 16, 255))
-    return f.size + 26
+    d.text((x, y), ss, font=f, fill=gold, stroke_width=3, stroke_fill=(25, 20, 10, 255))
+    return f.size + 28
 
 def _draw_trend_badge(d, y=78):
     """Gold pill: 'الأكثر استماعًا' — signals a trending pick."""
@@ -382,12 +360,12 @@ def _draw_trend_badge(d, y=78):
     import arabic_reshaper
     from bidi.algorithm import get_display
     label = get_display(arabic_reshaper.reshape("الأكثر استماعًا"))
-    f = ImageFont.truetype(str(FONT), 46)
+    f = ImageFont.truetype(str(FONT), 54)
     bb = d.textbbox((0, 0), label, font=f)
     w = bb[2] - bb[0]; h = bb[3] - bb[1]
-    x0 = 540 - w // 2 - 40; x1 = 540 + w // 2 + 40
-    d.rounded_rectangle([x0, y, x1, y + h + 24], radius=30, fill=(211, 175, 96, 255))
-    d.text((x0 + 40, y + 11 - bb[1]), label, font=f, fill=(18, 14, 7, 255))
+    x0 = 540 - w // 2 - 44; x1 = 540 + w // 2 + 44
+    d.rounded_rectangle([x0, y, x1, y + h + 26], radius=36, fill=(233, 196, 106, 255))
+    d.text((x0 + 44, y + 11 - bb[1]), label, font=f, fill=(18, 14, 7, 255))
 
 def make_thumb_from_photo(photo_path, out_jpg, theme_line, ref_line):
     """Turn a USER-provided photo into a beautiful 9:16 thumb with Arabic text."""
@@ -402,7 +380,7 @@ def make_thumb_from_photo(photo_path, out_jpg, theme_line, ref_line):
     y = 1300
     y += _draw_gold_line(d, theme_line, y)
     y += _draw_gold_line(d, ref_line, y, size=64)
-    img.convert('RGB').save(str(out_jpg), quality=94)
+    img.convert('RGB').save(str(out_jpg), quality=96)
     print(f"user-photo thumb saved: {out_jpg}", flush=True)
 
 def main():

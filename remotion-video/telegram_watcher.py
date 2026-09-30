@@ -101,6 +101,19 @@ def set_quota_wait(hours=20):
     save_json(WORK_DIR / 'quota_until.json', {'until': time.time() + hours * 3600})
     log(f"youtube quota cooldown set (+{hours}h)")
 
+def in_publish_window():
+    """Gate daily publishing to the audience's golden evening hours (machine local time).
+    Off unless TG_ENFORCE_WINDOW=1 (production). Supports overnight spans (e.g. 19.5-24 or 22-2)."""
+    if os.getenv("TG_ENFORCE_WINDOW") != "1":
+        return True
+    now = time.localtime()
+    cur = now.tm_hour + now.tm_min / 60.0
+    start = float(os.getenv("TG_PUB_START", "19.5"))
+    end = float(os.getenv("TG_PUB_END", "24.0"))
+    if end < start:
+        return cur >= start or cur < end
+    return start <= cur < end
+
 def get_offset():
     return load_json(WORK_DIR / 'offset.json', 0)
 
@@ -437,6 +450,10 @@ def _run():
 
     if published_today() >= UPLIMIT:
         log(f"today's publish limit ({UPLIMIT}) already reached — nothing to do")
+        return 0
+
+    if not in_publish_window():
+        log("outside publish window (evening peak active only) — waiting")
         return 0
 
     processed = get_processed()
