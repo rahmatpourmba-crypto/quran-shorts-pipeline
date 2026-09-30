@@ -380,7 +380,7 @@ def process_one(v, custom_fid=None):
             block = (last.get('block') if last else None) or codes
             theme, ref = MS.theme_for_block(block)
             cust_thumb = OUT_DIR / f"{base}_custom_thumb.jpg"
-            MS.make_thumb_from_photo(cust_base, cust_thumb, theme, ref)
+            MS.make_thumb_from_photo(cust_base, cust_thumb, theme, ref, block)
             thumb = cust_thumb
         except Exception as e:
             log("custom thumb build failed: " + repr(e)[:200])
@@ -389,7 +389,7 @@ def process_one(v, custom_fid=None):
             last = load_json(MS.WORK() / 'last_block.json', None)
             block = (last.get('block') if last else None) or codes
             ff = MS.get_ffmpeg()
-            MS.make_thumb(ff, final, thumb, MS.build_texts(block), *MS.theme_for_block(block))
+            MS.make_thumb(ff, final, thumb, MS.build_texts(block), *MS.theme_for_block(block), block)
         except Exception as e:
             log("auto thumb rebuild failed: " + repr(e)[:200])
     if not final.exists() or final.stat().st_size < 100000:

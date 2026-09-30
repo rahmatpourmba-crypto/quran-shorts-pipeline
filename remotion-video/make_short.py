@@ -219,8 +219,8 @@ def make_text_png(lines, out):
     img.save(str(out))
     print(f"text png saved: {out}", flush=True)
 
-def make_thumb(ff, video_path, out_jpg, lines, theme=None, ref=None):
-    """Beautiful thumbnail: smart frame + cinematic overlay + gold typography."""
+def make_thumb(ff, video_path, out_jpg, lines, theme=None, ref=None, block=None):
+    """Beautiful thumbnail: smart frame + cinematic overlay + gold typography + the actual ayah text."""
     import json
     from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
     import arabic_reshaper
@@ -248,30 +248,33 @@ def make_thumb(ff, video_path, out_jpg, lines, theme=None, ref=None):
     _draw_top_label(d, shape("تلاوة قرآن — ياسر الدوسري"))
     _draw_trend_badge(d)
 
-    # surah refs (big, gold), only first 2 fit
-    y = 1280
+    # hero: the actual Arabic verse text, then gold theme + surah ref
+    y = 1210
+    hero = ayah_hero(block)
+    if hero:
+        y += _draw_ayah_hero(d, hero, y) + 16
     if theme:
-        y += _draw_gold_line(d, theme, y)
-        y += _draw_gold_line(d, ref or "", y, size=64)
-    else:
+        y += _draw_gold_line(d, theme, y, size=62)
+        y += _draw_gold_line(d, ref or "", y, size=50)
+    elif not hero:
         y = 1400
-    for line in lines[:2]:
-        ss = shape(line)
-        if len(ss) > 40:
-            fsz = 60
-        elif len(ss) > 22:
-            fsz = 72
-        else:
-            fsz = 96
-        f = ImageFont.truetype(str(FONT), fsz)
-        b = d.textbbox((0,0), ss, font=f)
-        x = 1080//2 - (b[2]-b[0])//2
-        # glow
-        for dx, dy in ((-3,-3),(3,-3),(-3,3),(3,3),(0,-4),(0,4)):
-            d.text((x+dx, y+dy), ss, font=f, fill=(211,175,96,150))
-        d.text((x, y), ss, font=f, fill=(255, 214, 130, 255),
-               stroke_width=2, stroke_fill=(30,26,16,255))
-        y += fsz + 30
+    if not hero:
+        for line in lines[:2]:
+            ss = shape(line)
+            if len(ss) > 40:
+                fsz = 60
+            elif len(ss) > 22:
+                fsz = 72
+            else:
+                fsz = 96
+            f = ImageFont.truetype(str(FONT), fsz)
+            b = d.textbbox((0,0), ss, font=f)
+            x = 1080//2 - (b[2]-b[0])//2
+            for dx, dy in ((-3,-3),(3,-3),(-3,3),(3,3),(0,-4),(0,4)):
+                d.text((x+dx, y+dy), ss, font=f, fill=(211,175,96,150))
+            d.text((x, y), ss, font=f, fill=(255, 214, 130, 255),
+                   stroke_width=2, stroke_fill=(30,26,16,255))
+            y += fsz + 30
 
     img.convert('RGB').save(str(out_jpg), quality=96)
     print(f"thumb saved: {out_jpg}", flush=True)
@@ -367,8 +370,71 @@ def _draw_trend_badge(d, y=78):
     d.rounded_rectangle([x0, y, x1, y + h + 26], radius=36, fill=(233, 196, 106, 255))
     d.text((x0 + 44, y + 11 - bb[1]), label, font=f, fill=(18, 14, 7, 255))
 
-def make_thumb_from_photo(photo_path, out_jpg, theme_line, ref_line):
-    """Turn a USER-provided photo into a beautiful 9:16 thumb with Arabic text."""
+_ARABIC_INDEX = None
+def arabic_index():
+    """code 'SSSAAA' -> full Arabic ayah text (from segments.json), loaded once."""
+    global _ARABIC_INDEX
+    if _ARABIC_INDEX is None:
+        idx = {}
+        try:
+            SEG = json.loads((DATA / 'src' / 'segments.json').read_text(encoding='utf-8'))
+            for seg in SEG:
+                arr = seg.get('arabic_ayahs', [])
+                for j in range(seg['to'] - seg['from'] + 1):
+                    if j < len(arr):
+                        idx[f"{seg['surah']:03d}{seg['from'] + j:03d}"] = arr[j].strip()
+        except Exception:
+            pass
+        _ARABIC_INDEX = idx
+    return _ARABIC_INDEX
+
+def ayah_hero(block):
+    """Actual Arabic text of the FIRST chosen ayah — the hook written on the thumb."""
+    if not block:
+        return None
+    idx = arabic_index()
+    for code in block:
+        t = idx.get(code)
+        if t:
+            return t[:140]
+    return None
+
+def wrap_arabic(d, text, font, max_w):
+    """Break reshaped Arabic text into lines that fit max_w (visual order chunks)."""
+    import arabic_reshaper
+    from bidi.algorithm import get_display
+    reshaped = get_display(arabic_reshaper.reshape(text))
+    lines, cur = [], ''
+    for ch in reshaped:
+        if d.textlength(cur + ch, font=font) <= max_w:
+            cur += ch
+        else:
+            if cur:
+                lines.append(cur)
+            cur = ch
+    if cur:
+        lines.append(cur)
+    return lines
+
+def _draw_ayah_hero(d, text, y, max_w=940):
+    """Big, readable cream-white ayah text (the Sr. visual hook on the thumbnail)."""
+    from PIL import ImageFont
+    size = 88 if len(text) <= 55 else (74 if len(text) <= 85 else 62)
+    f = ImageFont.truetype(str(FONT), size)
+    lines = wrap_arabic(d, text, f, max_w)[:2]
+    dy = 0
+    for ln in lines:
+        b = d.textbbox((0, 0), ln, font=f)
+        x = 1080 // 2 - (b[2] - b[0]) // 2
+        for dx, dyy in ((-4, -4), (4, -4), (-4, 4), (4, 4), (0, -6), (0, 6)):
+            d.text((x + dx, y + dy + dyy), ln, font=f, fill=(0, 0, 0, 210))
+        d.text((x, y + dy), ln, font=f, fill=(252, 248, 240, 255),
+               stroke_width=3, stroke_fill=(30, 22, 8, 255))
+        dy += size + 24
+    return dy
+
+def make_thumb_from_photo(photo_path, out_jpg, theme_line, ref_line, block=None):
+    """Turn a USER-provided photo into a beautiful 9:16 thumb with Arabic text + the ayah."""
     from PIL import Image
     import arabic_reshaper
     from bidi.algorithm import get_display
@@ -377,9 +443,12 @@ def make_thumb_from_photo(photo_path, out_jpg, theme_line, ref_line):
     img, d = _thumb_backdrop(base)
     _draw_top_label(d, get_display(arabic_reshaper.reshape("تلاوة قرآن — ياسر الدوسري")))
     _draw_trend_badge(d)
-    y = 1300
-    y += _draw_gold_line(d, theme_line, y)
-    y += _draw_gold_line(d, ref_line, y, size=64)
+    y = 1210
+    hero = ayah_hero(block)
+    if hero:
+        y += _draw_ayah_hero(d, hero, y) + 16
+    y += _draw_gold_line(d, theme_line, y, size=62)
+    y += _draw_gold_line(d, ref_line, y, size=50)
     img.convert('RGB').save(str(out_jpg), quality=96)
     print(f"user-photo thumb saved: {out_jpg}", flush=True)
 
@@ -431,7 +500,7 @@ def main():
     print("7) thumbnail", flush=True)
     th = OUT_DIR() / f'{base}_thumb.jpg'
     theme, ref = theme_for_block(block)
-    make_thumb(ff, final, th, texts, theme, ref)
+    make_thumb(ff, final, th, texts, theme, ref, block)
 
     print("FINAL:", final, final.stat().st_size, flush=True)
     print("THUMB:", th, th.stat().st_size, flush=True)
