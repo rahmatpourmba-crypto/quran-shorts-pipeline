@@ -22,7 +22,7 @@ if sys.stdout and hasattr(sys.stdout, "reconfigure"):
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "-1004354666671")
 UPLIMIT = int(os.getenv("TG_DAILY_LIMIT", "1"))
-THUMB_WINDOW = int(os.getenv("TG_THUMB_WINDOW", "2400"))   # seconds a pending thumb stays fresh
+THUMB_WINDOW = int(os.getenv("TG_THUMB_WINDOW", "604800"))   # seconds a pending thumb stays fresh (7d backlog)
 
 ROOT = Path(__file__).resolve().parent
 WORKROOT = Path(os.getenv("TG_WORK", str(Path.home() / "tg_work")))
@@ -40,15 +40,31 @@ _spec.loader.exec_module(MS)
 def log(m): print(f"[watcher] {m}", flush=True)
 
 # --- telegram helpers ---------------------------------------------------------
-def tg(url_extra, timeout=60):
-    with urllib.request.urlopen('https://api.telegram.org/bot' + TOKEN + url_extra, timeout=timeout) as r:
-        return json.loads(r.read())
+def tg(url_extra, timeout=60, tries=4):
+    last = None
+    for i in range(tries):
+        try:
+            with urllib.request.urlopen('https://api.telegram.org/bot' + TOKEN + url_extra, timeout=timeout) as r:
+                return json.loads(r.read())
+        except Exception as e:
+            last = e
+            log(f"tg retry {i + 1}/{tries}: {type(e).__name__} {e}")
+            time.sleep(4 * (i + 1))
+    raise last
 
-def tg_post(url_extra, data, timeout=120):
+def tg_post(url_extra, data, timeout=120, tries=4):
     body = urllib.parse.urlencode(data).encode()
-    req = urllib.request.Request('https://api.telegram.org/bot' + TOKEN + url_extra, data=body)
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        return json.loads(r.read())
+    last = None
+    for i in range(tries):
+        try:
+            req = urllib.request.Request('https://api.telegram.org/bot' + TOKEN + url_extra, data=body)
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                return json.loads(r.read())
+        except Exception as e:
+            last = e
+            log(f"tg_post retry {i + 1}/{tries}: {type(e).__name__} {e}")
+            time.sleep(4 * (i + 1))
+    raise last
 
 def download(fid, dest, size_hint=0):
     r = tg('/getFile?file_id=' + fid)
@@ -227,11 +243,14 @@ def recover_message(msid):
 
 # --- upload + post ----------------------------------------------------------------
 def verify_reachable(yt):
-    try:
-        yt.channels().list(part="contentDetails", mine=True).execute()
-        return True
-    except Exception:
-        return False
+    for i in range(3):
+        try:
+            yt.channels().list(part="contentDetails", mine=True).execute()
+            return True
+        except Exception as e:
+            log(f"yt verify retry {i + 1}/3: {type(e).__name__} {e}")
+            time.sleep(6 * (i + 1))
+    return False
 
 def recent_upload_desc(yt, limit=15):
     import time as _t
@@ -382,33 +401,50 @@ def main():
     if not TOKEN:
         log("TELEGRAM_BOT_TOKEN not set")
         return 0
+    lock = WORK_DIR / 'watcher.lock'
+    if lock.exists() and time.time() - lock.stat().st_mtime < 7200:
+        log("another watcher instance alive recently — skip this run")
+        return 0
+    lock.write_text(str(time.time()))
+    try:
+        return _run()
+    finally:
+        try:
+            lock.unlink()
+        except Exception:
+            pass
+
+def _run():
 
     recv_ids = [x.strip() for x in os.getenv("RECOVER_CHANNEL_MSGS", "").split(",") if x.strip()]
     backlog = [recover_message(int(x)) for x in recv_ids]
     backlog = [x for x in backlog if x]
 
-    fetch_events()
-    inbox = get_inbox()
-    videos = []
-    seen = set()
-    for v in backlog + inbox:
-        if v['key'] not in seen:
-            seen.add(v['key'])
-            videos.append(v)
+    try:
+        fetch_events()
+    except Exception as e:
+        log("fetch_events failed (new messages will be caught next run): " + repr(e)[:150])
 
-    videos = [v for v in videos if v['key'] not in get_processed()]
-    if not videos:
-        log("no new videos")
-        return 0
-
+    processed = get_processed()
     made = 0
-    stop_early = False
-    i = 0
-    while i < len(videos):
-        v = videos[i]
-        if made >= UPLIMIT:
-            log(f"daily limit {UPLIMIT} reached ({len(videos) - i} remain in inbox)")
+    guard = 0
+    while True:
+        guard += 1
+        if guard > 40:
+            log("iteration guard hit, stopping")
             break
+        inbox = get_inbox()
+        pend = [v for v in inbox if v['key'] not in processed]
+        if not pend:
+            log("no new videos")
+            break
+        if made >= UPLIMIT:
+            log(f"daily limit {UPLIMIT} reached ({len(pend)} remain in inbox)")
+            break
+        if quota_until() > time.time():
+            log("youtube quota cooldown active — video stays queued")
+            break
+        v = pend[0]
         custom_fid = peek_thumb()   # one queued user photo per video, in order
         try:
             stop_now, vid = process_one(v, custom_fid)
@@ -418,27 +454,29 @@ def main():
         if custom_fid is not None and vid:
             pop_thumb()             # photo only consumed once its video is live
         if vid:
-            # success: drop from inbox
-            saved = [x for x in videos if x['key'] != v['key']]
+            # success: drop from inbox + pin processed
             save_inbox([x for x in get_inbox() if x['key'] != v['key']])
-            videos = saved
+            processed = processed | {v['key']}
+            mark_processed(v['key'])
             made += 1
-            i += 1
         elif stop_now:
-            log("upload quota hit, stopping (video stays queued)")
-            stop_early = True
+            log("stopped (daily cap / quota) — video stays queued, retry next run")
             break
         else:
+            # transient failure: keep forever, but rotate to the back after
+            # 3 attempts so a stuck item never blocks the rest of the queue
             v['attempts'] = v.get('attempts', 0) + 1
+            rest = [x for x in get_inbox() if x['key'] != v['key']]
             if v['attempts'] >= 3:
-                log(f"dropping video {v['msg_id']} after 3 failed attempts")
-                saved = [x for x in videos if x['key'] != v['key']]
-                save_inbox([x for x in get_inbox() if x['key'] != v['key']])
-                videos = saved
+                v['attempts'] = 0
+                rest.append(v)
+                log(f"video {v['msg_id']} moved to back of queue (3 failed attempts)")
             else:
-                save_inbox(get_inbox())
-            i += 1
-    log(f"done, made {made}" + (" (quota stop)" if stop_early else ""))
+                rest.insert(0, v)
+            save_inbox(rest)
+            if made <= 0:
+                break   # avoid a retry storm inside a single run
+    log(f"done, made {made}")
     return 0
 
 if __name__ == '__main__':
