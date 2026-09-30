@@ -77,6 +77,14 @@ def load_json(p, dflt):
 def save_json(p, obj):
     p.write_text(json.dumps(obj, ensure_ascii=True), encoding='utf-8')
 
+def quota_until():
+    q = load_json(WORK_DIR / 'quota_until.json', {})
+    return float(q.get('until', 0)) if isinstance(q, dict) else 0.0
+
+def set_quota_wait(hours=20):
+    save_json(WORK_DIR / 'quota_until.json', {'until': time.time() + hours * 3600})
+    log(f"youtube quota cooldown set (+{hours}h)")
+
 def get_offset():
     return load_json(WORK_DIR / 'offset.json', 0)
 
@@ -347,11 +355,17 @@ def process_one(v, custom_fid=None):
         return (False, None)
     block_for_theme = codes or (load_json(MS.WORK() / 'last_block.json', None) or {}).get('block')
     theme, ref = MS.theme_for_block(block_for_theme)
+    if quota_until() > time.time():
+        log("youtube quota cooldown active — upload skipped, video stays queued")
+        return (True, None)
     vid, uerr = upload_short(final, thumb, v['key'], theme, ref)
     if uerr:
         log("upload error: " + uerr)
         u = uerr.lower()
-        return ('quota' in u or '429' in u or 'exceeded' in u), None   # True => stop today
+        if 'quota' in u or '429' in u or 'exceeded' in u:
+            set_quota_wait()
+            return (True, None)               # stop today; retry after cooldown
+        return (False, None)
 
     ok = False
     if vid:
