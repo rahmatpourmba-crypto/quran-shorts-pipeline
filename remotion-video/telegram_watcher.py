@@ -121,6 +121,16 @@ def get_inbox():
 def save_inbox(il):
     save_json(WORK_DIR / 'inbox.json', il)
 
+def dayfile():
+    return WORK_DIR / ('day_' + time.strftime('%Y-%m-%d') + '.json')
+
+def published_today():
+    d = load_json(dayfile(), 0)
+    return int(d) if isinstance(d, (int, float)) else 0
+
+def inc_published():
+    save_json(dayfile(), published_today() + 1)
+
 def pending_thumb():
     return pop_thumb()
 
@@ -425,6 +435,10 @@ def _run():
     except Exception as e:
         log("fetch_events failed (new messages will be caught next run): " + repr(e)[:150])
 
+    if published_today() >= UPLIMIT:
+        log(f"today's publish limit ({UPLIMIT}) already reached — nothing to do")
+        return 0
+
     processed = get_processed()
     made = 0
     guard = 0
@@ -454,10 +468,11 @@ def _run():
         if custom_fid is not None and vid:
             pop_thumb()             # photo only consumed once its video is live
         if vid:
-            # success: drop from inbox + pin processed
+            # success: drop from inbox + pin processed + count today
             save_inbox([x for x in get_inbox() if x['key'] != v['key']])
             processed = processed | {v['key']}
             mark_processed(v['key'])
+            inc_published()
             made += 1
         elif stop_now:
             log("stopped (daily cap / quota) — video stays queued, retry next run")
