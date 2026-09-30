@@ -22,6 +22,9 @@ jobs:
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
       RECOVER_CHANNEL_MSGS: ${{ inputs.recover_message_ids || '' }}
+      TG_WORK: C:\Users\Admin\tg_work
+      TG_DATA: C:\Users\Admin\tg_data
+      TG_PYMAKER: C:\Users\Admin\tg_code\trend-video-maker
     steps:
       - uses: actions/checkout@v4
         with:
