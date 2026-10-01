@@ -181,11 +181,45 @@ def loop_to(ff, src, dst, target):
                     '-c', 'copy', '-t', str(target), '-an', '-movflags', '+faststart', str(dst)],
                     check=True, capture_output=True, timeout=180)
 
-def overlay_text_and_audio(ff, video, audio, text_png, dst):
-    """Combine: looped muted video + tilaawah audio + Arabic text overlay."""
-    subprocess.run([ff, '-y', '-i', str(video), '-i', str(audio),
-        '-i', str(text_png),
-        '-filter_complex', f'[2:v]format=rgba[txt];[0:v][txt]overlay=0:1360[tv];[tv]format=yuv420p[vout];[1:a]loudnorm=I=-14:TP=-1.5:LRA=11,atrim=0:{TARGET},apad=pad_dur=1.2[aout]',
+def make_subscribe_png(out):
+    """Discreet gold 'subscribe' pill — a persistent watermark that converts views to subs."""
+    from PIL import Image, ImageDraw, ImageFont
+    import arabic_reshaper
+    from bidi.algorithm import get_display
+    W, H = 1080, 200
+    img = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    label = get_display(arabic_reshaper.reshape("اشترك وفعّل التنبيهات 🔔"))
+    f = ImageFont.truetype(str(FONT), 46)
+    bb = d.textbbox((0, 0), label, font=f)
+    w = bb[2] - bb[0]; h = bb[3] - bb[1]
+    pw, ph = w + 74, h + 36
+    x0, y0 = (W - pw) // 2, (H - ph) // 2
+    d.rounded_rectangle([x0, y0, x0 + pw, y0 + ph], radius=ph // 2,
+                        fill=(6, 9, 16, 165), outline=(233, 196, 106, 235), width=3)
+    d.text((x0 + 37, y0 + 16 - bb[1]), label, font=f, fill=(255, 216, 140, 255))
+    # soft shadow under the pill so it stays legible on any footage
+    sh = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    sd = ImageDraw.Draw(sh)
+    sd.rounded_rectangle([x0 + 4, y0 + ph // 2, x0 + pw - 4, y0 + ph + 30], radius=16, fill=(0, 0, 0, 60))
+    from PIL import ImageFilter
+    sh = sh.filter(ImageFilter.GaussianBlur(14))
+    img = Image.alpha_composite(sh, img)
+    img.save(str(out))
+    print(f"subscribe pill saved: {out}", flush=True)
+
+def overlay_text_and_audio(ff, video, audio, text_png, dst, sub_png=None):
+    """Combine: looped muted video + tilaawah audio + Arabic text overlay + subscribe CTA."""
+    fc = (f'[2:v]format=rgba[txt];[0:v][txt]overlay=0:1360[tv]')
+    if sub_png:
+        fc += f';[3:v]format=rgba[sp];[tv][sp]overlay=0:96[v2];[v2]format=yuv420p[vout]'
+        inputs = ['-i', str(video), '-i', str(audio), '-i', str(text_png), '-i', str(sub_png)]
+    else:
+        fc += ';[tv]format=yuv420p[vout]'
+        inputs = ['-i', str(video), '-i', str(audio), '-i', str(text_png)]
+    fc += f';[1:a]loudnorm=I=-14:TP=-1.5:LRA=11,atrim=0:{TARGET},apad=pad_dur=1.2[aout]'
+    subprocess.run([ff, '-y'] + inputs + [
+        '-filter_complex', fc,
         '-map', '[vout]', '-map', '[aout]', '-c:v', 'libx264', '-crf', '20', '-preset', 'fast',
         '-c:a', 'aac', '-b:a', '192k', '-shortest', '-movflags', '+faststart', str(dst)],
         check=True, capture_output=True, timeout=300)
@@ -496,7 +530,9 @@ def main():
 
     print("6) composite", flush=True)
     final = OUT_DIR() / f'{base}_short.mp4'
-    overlay_text_and_audio(ff, looped, tilaud, tp, final)
+    sp = work / 'subscribe_pill.png'
+    make_subscribe_png(sp)
+    overlay_text_and_audio(ff, looped, tilaud, tp, final, sp)
     print("7) thumbnail", flush=True)
     th = OUT_DIR() / f'{base}_thumb.jpg'
     theme, ref = theme_for_block(block)

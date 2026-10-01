@@ -299,10 +299,24 @@ def recent_upload_desc(yt, limit=15):
 
 PY_MAKER = Path(os.getenv('TG_PYMAKER', str(ROOT.parent / 'trend-video-maker')))
 
-def upload_short(final, thumb, src_marker, theme=None, ref=None):
+def _auth_yt():
+    """OAuth auth with an explicit, actionable message if the token died."""
     sys.path.insert(0, str(PY_MAKER))
-    from upload_yt import auth, upload
-    yt = auth(str(PY_MAKER / 'token_aya.pickle'))
+    from upload_yt import auth
+    try:
+        return auth(str(PY_MAKER / 'token_aya.pickle'))
+    except Exception as e:
+        msg = repr(e)
+        if 'invalid_grant' in msg or 'revoked' in msg or 'Token has been expired' in msg:
+            log("YOUTUBE AUTH EXPIRED/REVOKED — uploads blocked. Re-authorize: "
+                "python -X utf8 reauth.py  (videos stay queued, nothing is lost)")
+        else:
+            log("youtube auth error: " + msg[:200])
+        raise
+
+def upload_short(final, thumb, src_marker, theme=None, ref=None):
+    from upload_yt import upload, post_pinned_comment, create_or_get_playlist, add_to_playlist
+    yt = _auth_yt()
     if not verify_reachable(yt):
         return None, "youtube unreachable"
     t = theme or "تلاوةٌ مِنَ الْقُرآنِ الْكَريم"
@@ -322,9 +336,23 @@ def upload_short(final, thumb, src_marker, theme=None, ref=None):
         vid = upload(yt, final, thumb if thumb and Path(thumb).exists() else None, title, desc,
                      tags=['quran', 'quranrecitation', 'Shorts', 'القرآن', 'تلاوة', 'yasseraldossary'],
                      privacy='public', made_for_kids=False, category_id=27)
-        return vid, None
     except Exception as e:
         return None, repr(e)[:300]
+    if vid:
+        # convert views -> subscribers: ask + bookmark the tilaawah
+        try:
+            post_pinned_comment(yt, vid,
+                f"🤍 سبسكرايب وفعّل الجرس 🔔 ليصلك القرآن الكريم كل يوم\n"
+                f"📖 {ref} — {t}\n\n#القرآن_الكريم #ياسر_الدوسري")
+        except Exception as e:
+            log("pinned comment skipped: " + repr(e)[:120])
+        try:
+            pl = create_or_get_playlist(yt, "تلاوة قرآن | ياسر الدوسري",
+                description="تلاوة مرئية فاخرة للقرآن الكريم بصوت الشيخ ياسر الدوسري", privacy="public")
+            add_to_playlist(yt, pl, vid)
+        except Exception as e:
+            log("playlist add skipped: " + repr(e)[:120])
+    return vid, None
 
 def post_channel(final, caption):
     capf = WORK_DIR / 'caption.txt'
