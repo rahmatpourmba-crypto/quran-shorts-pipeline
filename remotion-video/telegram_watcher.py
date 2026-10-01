@@ -383,6 +383,14 @@ def process_one(v, custom_fid=None):
         if dest.stat().st_size < 200000:
             log("file too small, skip")
             return (False, None)
+        # input raw video: MUST be <= 59s (Shorts requirement)
+        try:
+            vd = MS.probe_dur(MS.get_ffmpeg(), dest)
+            if vd and vd > 59.9:
+                log(f"input video too long ({round(vd,1)}s) — reject (must be <= 59s)")
+                return (False, None)
+        except Exception as e:
+            log("dur check failed: " + repr(e)[:80])
         sys.argv = ['make_short.py', str(dest)] + ([','.join(codes)] if codes else [])
         try:
             MS.main()
@@ -423,6 +431,18 @@ def process_one(v, custom_fid=None):
     if not final.exists() or final.stat().st_size < 100000:
         log("FINAL MISSING")
         return (False, None)
+    # hard gate: never upload anything longer than 59s (Shorts requirement)
+    try:
+        fdur = MS.probe_dur(MS.get_ffmpeg(), final)
+        if fdur and fdur > 59.05:
+            log(f"final too long ({round(fdur,2)}s) — trimming to 59s")
+            MS.cap_to_59(MS.get_ffmpeg(), final)
+            fdur = MS.probe_dur(MS.get_ffmpeg(), final)
+            if fdur and fdur > 59.5:
+                log(f"still too long after trim ({round(fdur,2)}s) — skip upload")
+                return (False, None)
+    except Exception as e:
+        log("duration gate skipped: " + repr(e)[:100])
     block_for_theme = codes or (load_json(MS.WORK() / 'last_block.json', None) or {}).get('block')
     theme, ref = MS.theme_for_block(block_for_theme)
     if quota_until() > time.time():

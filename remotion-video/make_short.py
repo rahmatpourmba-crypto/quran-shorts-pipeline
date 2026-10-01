@@ -177,9 +177,25 @@ def loop_to(ff, src, dst, target):
     p = probe_dur(ff, src)
     if p <= 0: p = 5
     reps = max(1, int(target / p) + 1)
+    dur_eff = min(target, reps * p)
     subprocess.run([ff, '-y', '-stream_loop', str(reps), '-i', str(src),
-                    '-c', 'copy', '-t', str(target), '-an', '-movflags', '+faststart', str(dst)],
+                    '-c', 'copy', '-t', str(dur_eff), '-an', '-movflags', '+faststart', str(dst)],
                     check=True, capture_output=True, timeout=180)
+
+def cap_to_59(ff, path, hard=59.0):
+    """Hard guarantee: a Short must never exceed 59s. Re-trim in place if it does."""
+    d = probe_dur(ff, path)
+    if d and d > hard + 0.05:
+        subprocess.run([ff, '-y', '-i', str(path), '-t', str(hard),
+                        '-c:v', 'libx264', '-crf', '20', '-preset', 'fast',
+                        '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart',
+                        str(path) + '.tmp.mp4'],
+                       check=True, capture_output=True, timeout=300)
+        src = Path(str(path) + '.tmp.mp4')
+        src.replace(path)
+        print(f"trimmed {round(d,2)}s -> {round(probe_dur(ff, path),2)}s (max {hard}s)",
+              flush=True)
+    return probe_dur(ff, path)
 
 def make_subscribe_png(out):
     """Discreet gold 'subscribe' pill — a persistent watermark that converts views to subs."""
@@ -217,7 +233,9 @@ def overlay_text_and_audio(ff, video, audio, text_png, dst, sub_png=None):
     else:
         fc += ';[tv]format=yuv420p[vout]'
         inputs = ['-i', str(video), '-i', str(audio), '-i', str(text_png)]
-    fc += f';[1:a]loudnorm=I=-14:TP=-1.5:LRA=11,atrim=0:{TARGET},apad=pad_dur=1.2[aout]'
+    ad = probe_dur(ff, audio) or TARGET
+    ad_eff = min(TARGET, ad)
+    fc += f';[1:a]loudnorm=I=-14:TP=-1.5:LRA=11,atrim=0:{ad_eff},apad=pad_dur=0.0[aout]'
     subprocess.run([ff, '-y'] + inputs + [
         '-filter_complex', fc,
         '-map', '[vout]', '-map', '[aout]', '-c:v', 'libx264', '-crf', '20', '-preset', 'fast',
@@ -533,6 +551,7 @@ def main():
     sp = work / 'subscribe_pill.png'
     make_subscribe_png(sp)
     overlay_text_and_audio(ff, looped, tilaud, tp, final, sp)
+    cap_to_59(ff, final)
     print("7) thumbnail", flush=True)
     th = OUT_DIR() / f'{base}_thumb.jpg'
     theme, ref = theme_for_block(block)
