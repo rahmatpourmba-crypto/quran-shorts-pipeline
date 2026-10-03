@@ -360,26 +360,26 @@ def _thumb_backdrop(base_rgb):
     img = _enhance(img.convert('RGB')).convert('RGBA')
     ov = Image.new('RGBA', img.size, (0, 0, 0, 0))
     od = ImageDraw.Draw(ov)
-    for yy in range(0, 680):
-        a = int(180 * (1 - yy / 680.0) ** 1.5)
-        od.line([(0, yy), (1080, yy)], fill=(4, 7, 14, a))
-    for yy in range(1240, 1920):
-        a = int(240 * ((yy - 1240) / 680.0) ** 1.4)
-        od.line([(0, yy), (1080, yy)], fill=(4, 7, 14, a))
+    for yy in range(0, 720):
+        a = int(240 * (1 - yy / 720.0) ** 1.4)
+        od.line([(0, yy), (1080, yy)], fill=(0, 0, 0, a))
+    for yy in range(1200, 1920):
+        a = int(280 * ((yy - 1200) / 720.0) ** 1.3)
+        od.line([(0, yy), (1080, yy)], fill=(0, 0, 0, a))
     od.rectangle([(40, 46), (1040, 50)], fill=(233, 196, 106, 255))
     od.rectangle([(40, 1872), (1040, 1876)], fill=(233, 196, 106, 255))
     # warm golden halo behind the headline zone so text pops
     halo = Image.new('RGBA', img.size, (0, 0, 0, 0))
     hd = ImageDraw.Draw(halo)
-    hd.ellipse([150, 1160, 930, 1920], fill=(70, 46, 10, 70))
-    halo = halo.filter(ImageFilter.GaussianBlur(150))
+    hd.ellipse([120, 1120, 960, 1960], fill=(90, 60, 14, 95))
+    halo = halo.filter(ImageFilter.GaussianBlur(170))
     img = Image.alpha_composite(img, halo)
     vig = Image.new('L', (1080 // 2, 1920 // 2), 0)
     vd = ImageDraw.Draw(vig)
     vd.ellipse([0, 0, 1079, 1919], fill=255)
     vig = vig.resize((1080, 1920)).filter(ImageFilter.GaussianBlur(120))
-    dark = Image.new('RGBA', img.size, (0, 0, 0, 120))
-    img = Image.composite(img, dark, vig.point(lambda p: 255 - (255 - p) * 36 // 255))
+    dark = Image.new('RGBA', img.size, (0, 0, 0, 135))
+    img = Image.composite(img, dark, vig.point(lambda p: 255 - (255 - p) * 28 // 255))
     img = Image.alpha_composite(img, ov)
     return img, ImageDraw.Draw(img)
 
@@ -471,7 +471,7 @@ def wrap_arabic(d, text, font, max_w):
 def _draw_ayah_hero(d, text, y, max_w=940):
     """Big, readable cream-white ayah text (the Sr. visual hook on the thumbnail)."""
     from PIL import ImageFont
-    size = 88 if len(text) <= 55 else (74 if len(text) <= 85 else 62)
+    size = 96 if len(text) <= 55 else (82 if len(text) <= 85 else 70)
     f = ImageFont.truetype(str(FONT), size)
     lines = wrap_arabic(d, text, f, max_w)[:2]
     dy = 0
